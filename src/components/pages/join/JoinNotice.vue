@@ -6,6 +6,8 @@
       </template>
 
       <header>
+        <AppLogo class="mx-auto mb-5 block w-28" />
+
         <h1 class="mb-6 font-title text-3xl font-extrabold md:text-5xl">
           <slot name="header" />
         </h1>
@@ -25,6 +27,7 @@
 <script lang="ts" setup>
 import NoticeBg from './NoticeBg.vue';
 import AuthBox from '../../AuthBox.vue';
+import AppLogo from '../../AppLogo.vue';
 
 defineProps({
   showPattern: {
