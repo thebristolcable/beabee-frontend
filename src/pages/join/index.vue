@@ -92,10 +92,6 @@ const joinContent = ref<JoinContent>({
 const { signUpData, signUpDescription } = useJoin(joinContent);
 
 async function submitSignUp() {
-  if (window._paq) {
-    window._paq.push(['trackGoal', 2]);
-  }
-
   const data = await signUp(signUpData);
   if (data.redirectUrl) {
     (window.top || window).location.href = data.redirectUrl;
