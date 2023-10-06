@@ -157,13 +157,12 @@ const isAutoActiveMember = computed(
     isActiveMember.value && props.modelValue.type === ContributionType.Automatic
 );
 
-// Only non-active members and monthly manual contributors can change their period
+// Only non-active members and monthly contributors can change their period
 // as otherwise proration gets complicated
 const showChangePeriod = computed(
   () =>
     !isActiveMember.value ||
-    (isManualActiveMember.value &&
-      props.modelValue.period !== ContributionPeriod.Annually)
+    props.modelValue.period !== ContributionPeriod.Annually
 );
 
 const canSubmit = computed(
