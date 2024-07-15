@@ -7,90 +7,136 @@ meta:
 </route>
 
 <template>
-  <AppForm :button-text="t('login.login')" full-button @submit="submitLogin">
-    <h1 class="mb-2 font-title text-2.5xl">{{ t('login.title') }}</h1>
+  <AuthBox>
+    <AppForm
+      :button-text="t('common.login')"
+      inline-error
+      full-button
+      @submit="submitLogin"
+    >
+      <AppTitle>{{ t('login.title') }}</AppTitle>
 
-    <div class="mb-5">
-      <span>{{ t('login.notMember') }}</span>
-      <router-link to="/join" class="ml-1 font-semibold text-link underline">{{
-        t('login.joinNow')
-      }}</router-link>
-    </div>
+      <div v-if="!env.cnrMode" class="mb-5">
+        <span>{{ t('login.notMember') }}</span>
+        <router-link
+          to="/join"
+          class="ml-1 font-semibold text-link underline"
+          >{{ t('login.joinNow') }}</router-link
+        >
+      </div>
 
-    <div class="mb-5">
-      <AppInput
-        v-model="data.email"
-        type="email"
-        name="email"
-        required
-        :label="t('form.email')"
-      />
-    </div>
+      <div class="mb-5">
+        <AppInput
+          v-model="data.email"
+          type="email"
+          name="email"
+          required
+          :label="t('form.email')"
+        />
+      </div>
 
-    <div class="mb-3">
-      <AppInput
-        v-model="data.password"
-        type="password"
-        name="password"
-        required
-        :label="t('form.password')"
-      />
-    </div>
+      <div class="mb-3">
+        <AppInput
+          v-model="data.password"
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          required
+          :label="t('form.password')"
+        />
+      </div>
 
-    <div class="mb-8">
-      <router-link class="text-xs underline" to="/auth/forgot-password">
-        {{ t('login.forgotPassword') }}
-      </router-link>
-    </div>
+      <div class="mb-4">
+        <router-link
+          class="text-sm underline"
+          :to="{ path: '/auth/forgot-password', query: { email: data.email } }"
+        >
+          {{ t('login.forgotPassword') }}
+        </router-link>
+      </div>
 
-    <AppNotification
-      v-if="hasCredentialError"
-      class="mb-4"
-      variant="error"
-      :title="t('login.wrongCredentials')"
-    />
-  </AppForm>
+      <template v-if="hasMFAEnabled">
+        <AppNotification
+          class="mb-4"
+          variant="info"
+          :title="t('form.errorMessages.api.mfa-token-required')"
+        />
+
+        <div class="mb-3">
+          <AppInput
+            v-model="data.token"
+            type="text"
+            name="verifyCode"
+            required
+            min="6"
+            max="6"
+            :label="t('accountPage.mfa.codeInput.label')"
+          />
+        </div>
+
+        <div class="mb-4">
+          <router-link
+            class="text-sm underline"
+            :to="{ path: '/auth/lost-device', query: { email: data.email } }"
+          >
+            {{ t('login.lostMfaDevice') }}
+          </router-link>
+        </div>
+      </template>
+    </AppForm>
+  </AuthBox>
 </template>
 
 <script lang="ts" setup>
-import AppInput from '../../components/forms/AppInput.vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { reactive, ref } from 'vue';
-import { isInternalUrl } from '../../utils';
-import { updateCurrentUser } from '../../store';
-import { LoginData } from '../../utils/api/api.interface';
-import { login } from '../../utils/api/auth';
-import AppForm from '../../components/forms/AppForm.vue';
-import AppNotification from '../../components/AppNotification.vue';
+import { reactive, ref, toRef, watch } from 'vue';
+
+import AppInput from '@components/forms/AppInput.vue';
+import AppForm from '@components/forms/AppForm.vue';
+import AppNotification from '@components/AppNotification.vue';
+import AppTitle from '@components/AppTitle.vue';
+import AuthBox from '@components/AuthBox.vue';
+
+import { isInternalUrl } from '@utils/index';
+import { login } from '@utils/api/auth';
+import { isRequestError } from '@utils/api/index';
+
+import { updateCurrentUser } from '@store/index';
+
+import { LOGIN_CODES } from '@enums/login-codes';
+
+import { type LoginData } from '@type';
+import env from '@env';
 
 const { t } = useI18n();
 
 const route = useRoute();
 const redirectTo = route.query.next as string | undefined;
 
-const loading = ref(false);
-
 const data = reactive<LoginData>({
   email: '',
   password: '',
+  token: '',
 });
 
-const hasCredentialError = ref(false);
+const hasMFAEnabled = ref(false);
 
 async function submitLogin() {
-  loading.value = true;
-  hasCredentialError.value = false;
   try {
     await login(data);
     await updateCurrentUser();
     // TODO: use router when legacy app is gone
     window.location.href = isInternalUrl(redirectTo) ? redirectTo : '/';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (err: any) {
-    if (err.response?.status === 401) hasCredentialError.value = true;
-  } finally {
-    loading.value = false;
+  } catch (err) {
+    if (isRequestError(err, [LOGIN_CODES.REQUIRES_2FA], [401])) {
+      hasMFAEnabled.value = true;
+    } else {
+      throw err;
+    }
   }
 }
+
+// Reset MFA if email changed
+watch(toRef(data, 'email'), () => (hasMFAEnabled.value = false));
 </script>

@@ -7,9 +7,7 @@
     class="flex flex-col bg-white p-8 shadow"
   >
     <template v-if="contribution.membershipStatus === MembershipStatus.Expired">
-      <AppSubHeading class="mb-2">{{
-        t('contribution.expired')
-      }}</AppSubHeading>
+      <AppSubHeading>{{ t('contribution.expired') }}</AppSubHeading>
 
       <p>
         {{ t('contribution.expiredText') }}
@@ -17,18 +15,23 @@
     </template>
 
     <div v-else class="text-center">
-      <div class="mb-2">{{ t('contribution.contributing') }}</div>
-
-      <div class="text-3.5xl font-bold leading-7">
-        {{ n(contribution.amount!, 'currency') }}
+      <p>{{ t('contribution.contributing') }}</p>
+      <div class="my-2 font-bold">
+        <div class="text-3.5xl leading-7">
+          {{ n(contribution.amount!, 'currency') }}
+        </div>
+        {{ perPeriod }}
       </div>
-
-      <div class="mb-1.5 font-bold">{{ t('common.every') }} {{ period }}</div>
 
       <div v-if="contribution.membershipStatus === MembershipStatus.Expiring">
         <i18n-t keypath="contribution.willExpire">
           <template #expires>
-            <b class="text-danger"> {{ formattedExpiryDate }}</b>
+            <AppTime
+              v-if="contribution.membershipExpiryDate"
+              :datetime="contribution.membershipExpiryDate"
+              time-only
+              class="font-bold text-danger"
+            />
           </template>
         </i18n-t>
       </div>
@@ -66,10 +69,13 @@ import {
   MembershipStatus,
 } from '@beabee/beabee-common';
 import { useI18n } from 'vue-i18n';
-import { formatDistanceLocale, formatLocale } from '../../../../utils/dates';
+import { formatLocale } from '@utils/dates';
 import { computed } from 'vue';
-import { ContributionInfo } from '../../../../utils/api/api.interface';
-import AppSubHeading from '../../../AppSubHeading.vue';
+
+import AppSubHeading from '@components/AppSubHeading.vue';
+import AppTime from '@components/AppTime.vue';
+
+import type { ContributionInfo } from '@type';
 
 const { n, t } = useI18n();
 
@@ -77,15 +83,9 @@ const props = defineProps<{
   contribution: ContributionInfo;
 }>();
 
-const period = computed(() =>
+const perPeriod = computed(() =>
   props.contribution.period === ContributionPeriod.Monthly
-    ? t('common.month')
-    : t('common.year')
-);
-
-const formattedExpiryDate = computed(() =>
-  props.contribution.membershipExpiryDate
-    ? formatDistanceLocale(new Date(), props.contribution.membershipExpiryDate)
-    : undefined
+    ? t('common.perMonthText')
+    : t('common.perYearText')
 );
 </script>

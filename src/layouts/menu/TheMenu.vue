@@ -20,21 +20,21 @@
     </div>
 
     <!-- logo on small screens -->
-    <router-link to="/">
+    <component :is="logoLink.is" v-bind="logoLink.props">
       <AppLogo class="w-11" />
-    </router-link>
+    </component>
   </div>
 
   <div
-    class="absolute bottom-0 z-30 flex w-menu flex-none -translate-x-full transform flex-col bg-white transition-transform transition-width md:static md:w-16 md:transform-none xl:w-menu"
+    class="absolute bottom-0 z-30 flex w-menu flex-none -translate-x-full transform flex-col bg-white transition-transform transition-width md:static md:w-16 md:transform-none lg:w-menu"
     :class="{ 'top-[68px] translate-x-0': isMenuVisible }"
   >
     <div class="my-10 hidden text-center md:block">
       <!-- logo on bigger screens -->
 
-      <router-link to="/">
-        <AppLogo class="w-12 mx-auto xl:w-20" />
-      </router-link>
+      <component :is="logoLink.is" v-bind="logoLink.props">
+        <AppLogo class="mx-auto w-12 lg:w-20" />
+      </component>
     </div>
 
     <TheMenuList v-if="currentUser" />
@@ -42,9 +42,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { currentUser } from '../../store';
+import { currentUser, generalContent } from '../../store';
 import TheMenuList from './TheMenuList.vue';
 import AppLogo from '../../components/AppLogo.vue';
 import { useI18n } from 'vue-i18n';
@@ -57,6 +57,18 @@ const isMenuVisible = ref(false);
 // Automatically hide menu on route change
 useRouter().afterEach(() => {
   isMenuVisible.value = false;
+});
+
+const logoLink = computed(() => {
+  return currentUser.value
+    ? {
+        is: 'router-link',
+        props: { to: '/' },
+      }
+    : {
+        is: 'a',
+        props: { href: generalContent.value.siteUrl },
+      };
 });
 
 function toggleMenu() {

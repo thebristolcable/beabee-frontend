@@ -3,9 +3,11 @@ import {
   ContributionPeriod,
   PaymentMethod,
 } from '@beabee/beabee-common';
-import { reactive, computed, Ref } from 'vue';
-import i18n from '../../../lib/i18n';
-import { JoinContent } from '../../../utils/api/api.interface';
+import { reactive, computed, type Ref } from 'vue';
+
+import i18n from '@lib/i18n';
+
+import type { ContentPaymentData } from '@type';
 
 const { n, t } = i18n.global;
 
@@ -20,7 +22,7 @@ const signUpData = reactive({
   paymentMethod: PaymentMethod.StripeCard,
 });
 
-export function useJoin(content: Ref<JoinContent>) {
+export function useJoin(content: Ref<ContentPaymentData>) {
   const signUpDescription = computed(() => {
     const totalAmount =
       signUpData.amount +
@@ -29,9 +31,12 @@ export function useJoin(content: Ref<JoinContent>) {
         : 0);
 
     return {
-      amount: n(totalAmount, 'currency'),
-      period:
-        signUpData.period === 'monthly' ? t('common.month') : t('common.year'),
+      contribution:
+        n(totalAmount, 'currency') +
+        ' ' +
+        (signUpData.period === ContributionPeriod.Monthly
+          ? t('common.perMonthText')
+          : t('common.perYearText')),
     };
   });
 

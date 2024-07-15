@@ -6,92 +6,93 @@ meta:
 </route>
 <template>
   <PageTitle :title="t('menu.callouts')" border>
-    <div class="block flex-1 lg:hidden">
-      <AppSelect v-model="currentStatus" :items="statusItems" />
-    </div>
-    <div class="flex-0 ml-3">
+    <div class="flex-0 ml-3 hidden md:block">
       <AppButton to="/admin/callouts/new">{{
         t('calloutsAdmin.addCallout')
       }}</AppButton>
     </div>
+    <div class="fixed bottom-5 right-5 md:hidden">
+      <AppButton
+        :icon="faPlus"
+        :title="t('calloutsAdmin.addCallout')"
+        class="rounded-full drop-shadow-md"
+        size="lg"
+        to="/admin/callouts/new"
+      />
+    </div>
   </PageTitle>
 
-  <div class="md:flex">
-    <div class="hidden flex-none basis-[220px] lg:block">
-      <AppVTabs v-model="currentStatus" :items="statusItems" />
+  <AppFilterGrid v-model="currentStatus" :items="statusItems">
+    <div class="flex">
+      <AppSearchInput
+        v-model="currentSearch"
+        :placeholder="t('callouts.search')"
+      />
     </div>
-    <div class="flex-auto">
-      <div class="flex">
-        <AppSearchInput
-          v-model="currentSearch"
-          :placeholder="t('callouts.search')"
+    <AppPaginatedTable
+      v-model:query="currentPaginatedQuery"
+      keypath="callouts.showingOf"
+      :headers="headers"
+      :result="calloutsTable"
+    >
+      <template #header-hidden><font-awesome-icon :icon="faEye" /></template>
+      <template #value-status="{ value }">
+        <AppItemStatus :status="value" />
+      </template>
+      <template #value-title="{ item, value }">
+        <router-link
+          :to="'/admin/callouts/view/' + item.slug"
+          class="text-base font-bold text-link"
+        >
+          {{ value }}
+        </router-link>
+      </template>
+      <template #value-hidden="{ value }">
+        <font-awesome-icon
+          :class="value ? 'text-body-60' : 'text-body-80'"
+          :icon="value ? faEyeSlash : faEye"
         />
-      </div>
-      <AppPaginatedTable
-        v-model:query="currentPaginatedQuery"
-        keypath="callouts.showingOf"
-        :headers="headers"
-        :result="calloutsTable"
-      >
-        <template #header-hidden><font-awesome-icon :icon="faEye" /></template>
-        <template #value-status="{ value }">
-          <AppItemStatus :status="value" />
-        </template>
-        <template #value-title="{ item, value }">
-          <router-link
-            :to="'/admin/callouts/view/' + item.slug"
-            class="text-base font-bold text-link"
-          >
-            {{ value }}
-          </router-link>
-        </template>
-        <template #value-hidden="{ value }">
-          <font-awesome-icon
-            :class="value ? 'text-body-60' : 'text-body-80'"
-            :icon="value ? faEyeSlash : faEye"
-          />
-        </template>
-        <template #value-starts="{ value }">
-          <span class="whitespace-nowrap">{{
-            value && formatLocale(value, 'PP')
-          }}</span>
-        </template>
-        <template #value-expires="{ value }">
-          <span class="whitespace-nowrap">{{
-            value && formatLocale(value, 'PP')
-          }}</span>
-        </template>
-      </AppPaginatedTable>
-    </div>
-  </div>
+      </template>
+      <template #value-starts="{ value }">
+        <span class="whitespace-nowrap">{{
+          value && formatLocale(value, 'PP')
+        }}</span>
+      </template>
+      <template #value-expires="{ value }">
+        <span class="whitespace-nowrap">{{
+          value && formatLocale(value, 'PP')
+        }}</span>
+      </template>
+    </AppPaginatedTable>
+  </AppFilterGrid>
 </template>
 
 <script lang="ts" setup>
-import { Paginated } from '@beabee/beabee-common';
+import type { Paginated } from '@beabee/beabee-common';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { Header } from '../../../components/table/table.interface';
-import AppButton from '../../../components/button/AppButton.vue';
-import PageTitle from '../../../components/PageTitle.vue';
-import AppItemStatus from '../../../components/AppItemStatus.vue';
 import {
-  GetCalloutDataWith,
-  GetCalloutsQuery,
-} from '../../../utils/api/api.interface';
-import { formatLocale } from '../../../utils/dates';
-import { fetchCallouts } from '../../../utils/api/callout';
-
-import AppSelect from '../../../components/forms/AppSelect.vue';
-import AppSearchInput from '../../../components/forms/AppSearchInput.vue';
-import AppVTabs from '../../../components/tabs/AppVTabs.vue';
-import { addBreadcrumb } from '../../../store/breadcrumb';
-import { definePaginatedQuery, defineParam } from '../../../utils/pagination';
-import AppPaginatedTable from '../../../components/table/AppPaginatedTable.vue';
-import {
+  faPlus,
   faBullhorn,
   faEye,
   faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons';
+
+import type { Header } from '@components/table/table.interface';
+import AppButton from '@components/button/AppButton.vue';
+import PageTitle from '@components/PageTitle.vue';
+import AppItemStatus from '@components/AppItemStatus.vue';
+import AppSearchInput from '@components/forms/AppSearchInput.vue';
+import AppFilterGrid from '@components/AppFilterGrid.vue';
+import AppPaginatedTable from '@components/table/AppPaginatedTable.vue';
+
+import { definePaginatedQuery, defineParam } from '@utils/pagination';
+import { formatLocale } from '@utils/dates';
+import { fetchCallouts } from '@utils/api/callout';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import type { GetCalloutDataWith, GetCalloutsQuery } from '@type';
 
 const { t } = useI18n();
 
@@ -105,7 +106,7 @@ addBreadcrumb(
   ])
 );
 
-const statusItems = [
+const statusItems = computed(() => [
   {
     id: '',
     label: t('calloutsAdmin.filter.all'),
@@ -131,7 +132,7 @@ const statusItems = [
     label: t('calloutsAdmin.filter.draft'),
     to: '/admin/callouts?filter=draft',
   },
-];
+]);
 
 const headers: Header[] = [
   {

@@ -58,18 +58,20 @@
 </template>
 
 <script lang="ts" setup>
-import { RoleType } from '@beabee/beabee-common';
+import type { RoleType } from '@beabee/beabee-common';
 import useVuelidate from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 import { computed, reactive } from 'vue';
 import { format } from 'date-fns';
 import { useI18n } from 'vue-i18n';
-import { ContactRoleData } from '../../utils/api/api.interface';
+
 import AppForm from '../forms/AppForm.vue';
 import AppInput from '../forms/AppInput.vue';
 import AppLabel from '../forms/AppLabel.vue';
 import AppRadioGroup from '../forms/AppRadioGroup.vue';
 import AppSelect from '../forms/AppSelect.vue';
+
+import type { ContactRoleData } from '@type';
 
 const { t } = useI18n();
 

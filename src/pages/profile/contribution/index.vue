@@ -7,8 +7,8 @@ meta:
 <template>
   <PageTitle :title="t('menu.contribution')" />
 
-  <div v-if="!isIniting" class="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-    <div>
+  <App2ColGrid v-if="!isIniting">
+    <template #col1>
       <AppNotification
         v-if="updatedPaymentSource"
         class="mb-8"
@@ -39,6 +39,7 @@ meta:
       <UpdateContribution
         v-model="contribution"
         :content="content"
+        :payment-content="paymentContent"
         class="mb-7 md:mb-9"
       />
 
@@ -47,19 +48,18 @@ meta:
         class="mb-7 md:mb-9"
         :email="email"
         :payment-source="contribution.paymentSource"
-        :stripe-public-key="content.stripePublicKey"
+        :stripe-public-key="paymentContent.stripePublicKey"
       />
-
       <ContactCancelContribution
         id="me"
         :contribution="contribution"
         @cancel="$router.push('/profile/contribution/cancel')"
       />
-    </div>
-    <div>
-      <ContactPaymentsHistory id="me" class="lg:ml-10" />
-    </div>
-  </div>
+    </template>
+    <template #col2>
+      <ContactPaymentsHistory id="me" />
+    </template>
+  </App2ColGrid>
 </template>
 
 <script lang="ts" setup>
@@ -72,18 +72,24 @@ import {
 import { computed, onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import ContributionBox from '../../../components/pages/profile/contribution/ContributionBox.vue';
-import ContactCancelContribution from '../../../components/contact/ContactCancelContribution.vue';
-import PaymentSource from '../../../components/pages/profile/contribution/PaymentSource.vue';
-import PageTitle from '../../../components/PageTitle.vue';
-import ContactPaymentsHistory from '../../../components/contact/ContactPaymentsHistory.vue';
-import { currentUser } from '../../../store';
-import UpdateContribution from '../../../components/pages/profile/contribution/UpdateContribution.vue';
-import { ContributionInfo } from '../../../utils/api/api.interface';
-import { fetchContribution } from '../../../utils/api/contact';
-import { ContributionContent } from '../../../components/contribution/contribution.interface';
-import { fetchContent } from '../../../utils/api/content';
-import AppNotification from '../../../components/AppNotification.vue';
+
+import ContributionBox from '@components/pages/profile/contribution/ContributionBox.vue';
+import ContactCancelContribution from '@components/contact/ContactCancelContribution.vue';
+import PaymentSource from '@components/pages/profile/contribution/PaymentSource.vue';
+import PageTitle from '@components/PageTitle.vue';
+import ContactPaymentsHistory from '@components/contact/ContactPaymentsHistory.vue';
+import UpdateContribution from '@components/pages/profile/contribution/UpdateContribution.vue';
+import type { ContributionContent } from '@components/contribution/contribution.interface';
+
+import { fetchContribution } from '@utils/api/contact';
+import { fetchContent } from '@utils/api/content';
+
+import App2ColGrid from '@components/App2ColGrid.vue';
+import AppNotification from '@components/AppNotification.vue';
+
+import { currentUser } from '@store';
+
+import { type ContentPaymentData, type ContributionInfo } from '@type';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -101,8 +107,13 @@ const content = ref<ContributionContent>({
   periods: [],
   showAbsorbFee: true,
   paymentMethods: [PaymentMethod.StripeCard],
+});
+
+const paymentContent = ref<ContentPaymentData>({
   stripePublicKey: '',
   stripeCountry: 'eu',
+  taxRate: 0,
+  taxRateEnabled: false,
 });
 
 const email = computed(() =>
@@ -117,7 +128,10 @@ const contribution = ref<ContributionInfo>({
 
 onBeforeMount(async () => {
   isIniting.value = true;
+
   content.value = await fetchContent('join');
+  paymentContent.value = await fetchContent('payment');
+
   contribution.value = await fetchContribution();
   isIniting.value = false;
 });

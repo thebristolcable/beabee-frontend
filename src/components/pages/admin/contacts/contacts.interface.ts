@@ -2,7 +2,7 @@ import {
   ContributionPeriod,
   NewsletterStatus,
   ContributionType,
-  ContactFilterName,
+  type ContactFilterName,
   contactFilters,
 } from '@beabee/beabee-common';
 import { computed } from 'vue';
@@ -10,11 +10,11 @@ import { computed } from 'vue';
 import i18n from '../../../../lib/i18n';
 import { generalContent } from '../../../../store';
 import {
-  FilterGroup,
-  FilterItems,
+  type FilterGroup,
+  type FilterItems,
   withLabel,
 } from '../../../search/search.interface';
-import { Header } from '../../../table/table.interface';
+import { type Header } from '../../../table/table.interface';
 
 const { t } = i18n.global;
 
@@ -82,6 +82,7 @@ export const filterGroups = computed<FilterGroup<ContactFilterName>[]>(() => [
 ]);
 
 export const filterItems = computed<FilterItems<ContactFilterName>>(() => ({
+  id: withLabel(contactFilters.id, t('contacts.data.id')),
   firstname: withLabel(contactFilters.firstname, t('contacts.data.firstname')),
   lastname: withLabel(contactFilters.lastname, t('contacts.data.lastname')),
   email: withLabel(contactFilters.email, t('contacts.data.email')),
@@ -128,8 +129,8 @@ export const filterItems = computed<FilterItems<ContactFilterName>>(() => ({
     contactFilters.contributionPeriod,
     t('contacts.data.contributionPeriod'),
     {
-      [ContributionPeriod.Monthly]: t('common.monthly'),
-      [ContributionPeriod.Annually]: t('common.annually'),
+      [ContributionPeriod.Monthly]: t('common.contributionPeriod.monthly'),
+      [ContributionPeriod.Annually]: t('common.contributionPeriod.annually'),
     }
   ),
   manualPaymentSource: withLabel(

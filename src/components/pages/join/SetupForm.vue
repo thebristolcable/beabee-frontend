@@ -1,71 +1,78 @@
 <template>
-  <AppForm
-    :button-text="t('joinSetup.continue')"
-    full-button
-    @submit.prevent="onSubmit?.(data)"
+  <AuthBox
+    :title="
+      t('joinSetup.welcome', {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      })
+    "
+    :preview="preview"
   >
-    <JoinHeader
-      :title="
-        t('joinSetup.welcome', {
-          firstName: data.firstName,
-          lastName: data.lastName,
-        })
-      "
-    />
-    <div class="content-message mb-2" v-html="t('joinSetup.confirmDetails')" />
-    <p class="mb-6 mt-2">
-      {{ setupContent.welcome }}
-    </p>
-
-    <ContactBasicFields
-      v-model:email="data.email"
-      v-model:firstName="data.firstName"
-      v-model:lastName="data.lastName"
-    />
-
-    <template v-if="setupContent.showMailOptIn">
-      <ContactMailOptIn
-        v-model="data.profile.deliveryOptIn"
-        :content="setupContent"
-      />
-
-      <AppAddress
-        v-model:line1="data.addressLine1"
-        v-model:line2="data.addressLine2"
-        v-model:postCode="data.postCode"
-        v-model:cityOrTown="data.cityOrTown"
-        :required="data.profile.deliveryOptIn"
-      />
+    <template #header>
+      <p class="mb-4">{{ setupContent.welcome }}</p>
+      <p>{{ t('joinSetup.confirmDetails') }}</p>
     </template>
 
-    <AppOptIn
-      v-if="showNewsletterOptIn"
-      v-model="data.profile.newsletterOptIn"
-      :title="setupContent.newsletterTitle"
-      :text="setupContent.newsletterText"
-      :label="setupContent.newsletterOptIn"
-      class="mb-6"
-    />
-  </AppForm>
+    <AppForm
+      :button-text="t('joinSetup.continue')"
+      full-button
+      @submit.prevent="onSubmit?.(data)"
+    >
+      <ContactBasicFields
+        v-model:email="data.email"
+        v-model:firstName="data.firstName"
+        v-model:lastName="data.lastName"
+      />
+
+      <template v-if="setupContent.showMailOptIn">
+        <ContactMailOptIn
+          v-model="data.profile.deliveryOptIn"
+          :content="setupContent"
+        />
+
+        <AppAddress
+          v-model:line1="data.addressLine1"
+          v-model:line2="data.addressLine2"
+          v-model:postCode="data.postCode"
+          v-model:cityOrTown="data.cityOrTown"
+          :required="data.profile.deliveryOptIn"
+        />
+      </template>
+
+      <AppOptIn
+        v-if="showNewsletterOptIn"
+        v-model="data.profile.newsletterOptIn"
+        :title="setupContent.newsletterTitle"
+        :text="setupContent.newsletterText"
+        :label="setupContent.newsletterOptIn"
+        class="mb-6"
+      />
+    </AppForm>
+  </AuthBox>
 </template>
 <script lang="ts" setup>
 import { NewsletterStatus } from '@beabee/beabee-common';
 import useVuelidate from '@vuelidate/core';
 import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { JoinSetupContent } from '../../../utils/api/api.interface';
-import JoinHeader from './JoinHeader.vue';
-import AppAddress from '../../AppAddress.vue';
-import ContactBasicFields from '../../contact/ContactBasicFields.vue';
-import ContactMailOptIn from '../../contact/ContactMailOptIn.vue';
-import { fetchContact } from '../../../utils/api/contact';
-import { SetupContactData } from './join.interface';
-import AppOptIn from '../../AppOptIn.vue';
-import AppForm from '../../forms/AppForm.vue';
+
+import AppAddress from '@components/AppAddress.vue';
+import ContactBasicFields from '@components/contact/ContactBasicFields.vue';
+import ContactMailOptIn from '@components/contact/ContactMailOptIn.vue';
+import AppOptIn from '@components/AppOptIn.vue';
+import AppForm from '@components/forms/AppForm.vue';
+import AuthBox from '@components/AuthBox.vue';
+
+import { type SetupContactData } from './join.interface';
+
+import { fetchContact } from '@utils/api/contact';
+
+import type { ContentJoinSetupData } from '@type';
 
 const props = defineProps<{
-  setupContent: JoinSetupContent;
+  setupContent: ContentJoinSetupData;
   onSubmit?: (data: SetupContactData) => Promise<unknown> | unknown;
+  preview?: boolean;
 }>();
 
 const { t } = useI18n();

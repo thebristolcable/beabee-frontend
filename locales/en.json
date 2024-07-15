@@ -1,12 +1,48 @@
 {
   "accountPage": {
-    "changePassword": "Change password",
     "contactInformation": "Contact information",
     "deliveryAddress": "Delivery address",
     "deliveryOptIn": "Delivery opt-in",
     "loginDetail": "Login details",
     "phoneInfo": "By providing your phone number you are consenting to being contacted by phone",
     "phoneInfoAdmin": "You must have the person's consent before adding their phone number to the system",
+    "mfa": {
+      "codeInput": {
+        "info": "If you have lost your 2FA device please contact support",
+        "label": "Code"
+      },
+      "confirmDelete": {
+        "desc": "Are you sure you want to disable Multi-Factor Authentication? From then on, you'll only need your password to log in. Remember to delete the entry from your Authenticator app. You can always enable it again.",
+        "descToken": "To deactivate 2FA, please enter your current 2FA code:",
+        "title": "Disable 2FA"
+      },
+      "createUnknownErrorNotification": "The 2-factor authentication could not be saved due to an unknown error. Please try again or contact support.",
+      "deleteUnknownErrorNotification": "The 2-factor authentication could not be deleted due to an unknown error. Please try again or contact support.",
+      "disabledNotification": "Two-factor authentication successfully deactivated",
+      "enabledNotification": "Two-factor authentication successfully activated",
+      "enterCode": {
+        "desc": "Enter the code that is displayed in your authenticator app.",
+        "title": "Verification"
+      },
+      "modalTitle": "Enable 2-factor authentication",
+      "result": {
+        "invalidCode": "The code could not be confirmed, please try again or contact support.",
+        "successful": "2-factor authentication has been successfully set up.",
+        "title": "Done"
+      },
+      "scan": {
+        "desc": "Scan the QR code below with your authenticator app.",
+        "title": "QR Code"
+      },
+      "secretInput": {
+        "desc": "Alternatively, you can enter the following code into your Authenticator app.",
+        "label": "Secret code"
+      },
+      "title": "2-factor authentication",
+      "validateButton": {
+        "label": "Verify token"
+      }
+    },
     "newsletter": {
       "cantUpdate": "To change this contact's newsletter status, please contact support{'@'}beabee.io.",
       "currentStatus": {
@@ -27,14 +63,23 @@
   "actions": {
     "add": "Add",
     "back": "Back",
+    "backToLogin": "Back to login page",
     "cancel": "Cancel",
+    "changePassword": "Change password",
     "chooseFile": "Choose file",
+    "close": "Close",
     "continue": "Continue",
+    "copy": "Copy",
     "create": "Create",
     "delete": "Delete",
+    "disable": "Disable",
     "edit": "Edit",
+    "enable": "Enable",
     "endnow": "End now",
     "export": "Export",
+    "getStarted": "Get started",
+    "goBack": "Go back",
+    "next": "Next",
     "noBack": "No, go back",
     "participate": "Participate",
     "preview": "Preview",
@@ -42,17 +87,23 @@
     "reopen": "Reopen",
     "replicate": "Replicate",
     "reset": "Reset",
+    "reset2FA": "Reset 2FA",
+    "resetPassword": "Reset password",
+    "respond": "Respond",
     "revertToDraft": "Revert to draft",
     "save": "Save",
     "saveAndAnother": "Save and add another",
     "saveDraft": "Save draft",
     "schedule": "Schedule",
     "search": "Search",
+    "share": "Share",
+    "skip": "Skip",
     "submit": "Submit",
     "unpublish": "Unpublish",
     "update": "Update",
     "view": "View",
     "yesDelete": "Yes, delete it",
+    "yesDisable": "Yes, disable it",
     "yesRemove": "Yes, remove it"
   },
   "addContact": {
@@ -110,6 +161,12 @@
       },
       "copied": "API key copied to clipboard",
       "create": "Create a new API key",
+      "expires": {
+        "days": "In {n} days",
+        "never": "Never"
+      },
+      "expiresHelp": "For better security you should always set an expiry date to help prevent long term unauthorized to your system.",
+      "expiresNeverWarning": "I understand the risks of not setting an expiry date",
       "label": "API keys",
       "showingOf": "Showing {start} to {end} API keys out of {total}"
     },
@@ -150,6 +207,11 @@
         "title": "Social sharing",
         "twitterHandle": "Twitter handle"
       }
+    },
+    "payment": {
+      "paymentTitle": "Payment",
+      "taxRate": "VAT rate",
+      "taxRateEnabled": "Enable VAT"
     },
     "theme": {
       "bodyFont": "Body text",
@@ -260,20 +322,28 @@
     "data": {
       "createdAt": "Created",
       "description": "Description",
+      "expires": "Expiry date",
       "token": "Token"
     }
   },
   "callout": {
+    "actions": {
+      "updateResponse": "Update your response"
+    },
     "addAPoint": "Click on the map where you want to add a point",
-    "addLocation": "Add a new location",
-    "closed": "This callout is closed",
+    "addLocation": "Add a new entry",
+    "confirmHuman": "Please confirm you are human",
     "contactDetails": "Contact details",
+    "ended": "This callout ended on {date}",
     "form": {
       "email": "Your email",
       "guestFieldsMissing": "Please tell us your contact details",
       "name": "Your name",
       "submittingResponseError": "There was a problem submitting your response, please try again"
     },
+    "fromMap": "From a point in the map",
+    "fromMyLocation": "From my location",
+    "getStarted": "Get started",
     "joinNow": "Join now",
     "loginToYourAccount": "Login to your account",
     "membersOnly": "This callout is open to members only. To participate",
@@ -289,7 +359,8 @@
       "gallery": "Gallery",
       "map": "Map"
     },
-    "youResponded": "You replied to this callout ♥"
+    "youResponded": "You replied to this callout ♥",
+    "yourResponse": "Your response"
   },
   "calloutAdmin": {
     "deleted": "Callout deleted.",
@@ -338,7 +409,28 @@
     "updated": "Your callout was successfully updated."
   },
   "calloutBuilder": {
-    "showAdvancedOptions": "Show advanced form options"
+    "actions": {
+      "addSlide": "Add slide",
+      "removeSlide": "Remove slide"
+    },
+    "internalTitle": "Internal title",
+    "nextButton": "Next button text",
+    "nextSlide": {
+      "default": "-- Default --",
+      "label": "Next slide"
+    },
+    "prevButton": "Back button text",
+    "showAdvancedOptions": "Show advanced options",
+    "slideNo": "Slide {no}",
+    "submitButton": "Submit button text",
+    "translationFields": {
+      "description": "Description",
+      "label": "Label",
+      "option": "Option {n}",
+      "placeholder": "Placeholder"
+    },
+    "translationsText": "Set the translations for each component in your form",
+    "translationsTitle": "Translations"
   },
   "calloutResponse": {
     "data": {
@@ -381,6 +473,8 @@
       "viewOnMap": "View on map"
     },
     "editMode": "You are in edit mode, be careful!",
+    "manageFolders": "Manage folders",
+    "manageReviewers": "Manage reviewers",
     "manageTags": "Manage tags",
     "notifications": {
       "addedAssignee": "Assigned to \"{assignee}\"",
@@ -433,27 +527,23 @@
     }
   },
   "common": {
-    "annually": "Annually",
     "backToHome": "Back to home",
     "contributing": "Contributing",
+    "contributionPeriod": {
+      "annually": "Annually",
+      "monthly": "Monthly"
+    },
     "contributionType": {
       "automatic": "Automatic",
       "gift": "Gift",
       "manual": "Manual",
       "none": "None"
     },
-    "copy": "Copy",
-    "every": "every",
-    "goBack": "Go back",
     "hello": "Hello",
-    "in": "in",
     "itemsPerPage": "{items} items per page",
     "joined": "Joined",
     "loading": "Loading...",
     "login": "Login",
-    "month": "month | months",
-    "monthly": "Monthly",
-    "new": "new!",
     "newsletterStatus": {
       "cleaned": "Cleaned",
       "none": "None",
@@ -466,17 +556,22 @@
     "pageCount": "Page {pageNumber} out of {pageTotal}",
     "paymentStatus": {
       "cancelled": "Cancelled",
+      "draft": "Draft",
       "failed": "Failed",
       "pending": "Pending",
       "successful": "Successful"
     },
+    "perMonth": "/ month",
+    "perMonthText": "a month",
+    "perYear": "/ year",
+    "perYearText": "a year",
     "role": {
       "admin": "Admin",
       "member": "Member",
       "superadmin": "Super Admin"
     },
+    "selectNone": "-- None --",
     "selectOne": "Select one...",
-    "share": "Share",
     "show": "Show",
     "status": {
       "draft": "Draft",
@@ -488,8 +583,15 @@
     "timeAgo": "{time} ago",
     "timeIn": "in {time}",
     "until": "until",
-    "year": "year | years",
     "yes": "Yes"
+  },
+  "contactAccount": {
+    "actions": "Actions",
+    "confirmDelete": {
+      "text": "This will delete all data associated with {email}. If they have an active contribution this will be cancelled.",
+      "title": "Delete contact",
+      "warning": "This is irreversible. Are you sure you want to proceed?"
+    }
   },
   "contactContribution": {
     "confirmCancel": {
@@ -512,14 +614,19 @@
     "cancellationDate": "Cancelled on",
     "contribution": "Contribution",
     "contributionType": "Type",
-    "information": "Information",
+    "joinSurvey": "Join survey",
     "newsletter": "Newsletter",
     "overview": "Overview",
     "pickTag": "Pick a tag from the list below",
+    "profile": "Profile",
     "roles": "Roles",
     "security": {
       "instructions": "Copy and share this link:",
       "loginOverride": "Login override",
+      "mfa": {
+        "desc": "This contact has 2FA enabled. Click on the \"{ disableLabel }\" button to disable it.",
+        "disabledDesc": "2FA is not enabled for this contact."
+      },
       "resetPassword": "Reset password",
       "title": "Security",
       "whatDoTheButtonsDo": "Click the button to generate an emergency link:"
@@ -597,8 +704,10 @@
     },
     "paymentMethod": "Payment method",
     "paymentSourceUpdateError": "You can't update your bank account at the moment as you have a payment pending",
-    "prorateDecreaseMessage": "You have {monthsLeft} {months} left on your current contribution, your new contribution will start on {renewalDate}.",
-    "prorateIncreaseMessage": "You have {monthsLeft} {months} left on your current contribution. You can make a one-off payment of {oneOffPayment} to start your new contribution immediately.",
+    "prorateDecreaseMessage": "You have one month left on your current contribution. | You have {n} months left on your current contribution.",
+    "prorateDecreaseMessageWillStart": "Your new contribution will start on {renewalDate}.",
+    "prorateIncreaseMessage": "You have one month left on your current contribution. | You have {n} months left on your current contribution.",
+    "prorateIncreaseMessageOneOff": "You can make a one-off payment of {oneOffPayment} to start your new contribution immediately.",
     "prorateNoText": "You'll stay on your current contribution until then.",
     "prorateNoTitle": "Update my contribution on {renewalDate}",
     "prorateYesText": "You'll be charged a one-off payment of {oneOffPayment} now and your contribution will be updated immedately",
@@ -619,12 +728,6 @@
     "lastSavedNow": "Last saved just now",
     "steps": {
       "content": {
-        "inputs": {
-          "intro": {
-            "help": "<p>The <strong>Introduction text</strong> appears alongside the callout. It should explain why you are doing this callout and give any context the user might need before answering.</p>\n",
-            "label": "Introduction text"
-          }
-        },
         "title": "Content"
       },
       "dates": {
@@ -712,6 +815,9 @@
             "center": {
               "label": "Initial map center"
             },
+            "geocodeCountries": {
+              "label": "Restrict location search results to specific countries?"
+            },
             "initialZoom": {
               "label": "Initial zoom level"
             },
@@ -735,12 +841,24 @@
               "yes": "Yes"
             }
           },
+          "requireCaptcha": {
+            "help": "<p>If you enable <strong>bot spam protection</strong> users will be required to complete a Captcha to confirm they are human. This is useful to prevent your callout being spammed by bots</p>\n",
+            "label": "Enable bot spam protection on the callout?",
+            "opts": {
+              "all": "Yes, ask all users to confirm they are human",
+              "guests": "Yes, ask guests to confirm they are human",
+              "none": "No"
+            }
+          },
           "responseImageFilter": {
             "label": "Do you want to apply a filter to images?"
           },
           "responseImageProp": {
             "help": "<p>The image will be used to visualise the answer in map or gallery view. Important: This has to be a file upload component.</p>\n",
             "label": "Which form field should be used for response images?"
+          },
+          "responseLinks": {
+            "label": "Add links to the bottom of responses?"
           },
           "responseTitleProp": {
             "help": "<p>The title appears on top of each answer in the map or gallery view.</p>\n",
@@ -791,6 +909,10 @@
             "help": "<p>The <strong>Cover image</strong> will serve as an illustration for the callout on menus and forms.</p>\n",
             "label": "Cover image"
           },
+          "intro": {
+            "help": "<p>The <strong>Introduction text</strong> appears alongside the callout. It should explain why you are doing this callout and give any context the user might need before answering.</p>\n",
+            "label": "Introduction text"
+          },
           "overrideShare": {
             "label": "Use callout title and description for sharing?",
             "opts": {
@@ -839,7 +961,6 @@
   },
   "footer": {
     "contactUs": "Contact us at",
-    "contacts": "Contacts",
     "handbookResources": "Handbook & Resources",
     "impressum": "Impressum",
     "joinCommunity": "Join the Community",
@@ -848,10 +969,9 @@
     "terms": "Terms and Conditions"
   },
   "forgotPassword": {
-    "checkInbox": "Please check your inbox and follow the instructions in the email. Check your spam folder if it doesn't appear.",
+    "backToLogin": "Back to login page",
     "description": "Please enter your email address and we’ll send you password reset instructions.",
-    "message": "If there is an account associated with {email}, you will receive an email shortly.",
-    "resetPassword": "Reset your password",
+    "message": "If there is an account associated with {email}, you will receive an email shortly. Check your spam folder if it doesn't appear.",
     "title": "Forgot your password?"
   },
   "form": {
@@ -863,7 +983,13 @@
     "description": "Description",
     "email": "Email",
     "errorMessages": {
-      "aggregatorTop": "Something is missing. Please check for errors below.",
+      "api": {
+        "account-locked": "Account locked due to too many failed login attempts. Please reset your password or contact support for help.",
+        "duplicate-email": "Email address already exists",
+        "invalid-token": "Invalid 2FA token",
+        "login-failed": "Invalid password/email combination",
+        "mfa-token-required": "You have 2FA enabled, enter the token from your authenticator app to proceed"
+      },
       "generic": "Oops, something went wrong! Contact support if this happens again.",
       "validation": "Something is missing. Please check the fields above."
     },
@@ -921,6 +1047,11 @@
       "url": {
         "required": "URL is required",
         "url": "Invalid URL"
+      },
+      "verifyCode": {
+        "max": "The code may only be a maximum of {max} characters long.",
+        "min": "The code must be at least {min} characters long.",
+        "required": "Code is required"
       }
     },
     "firstName": "First name",
@@ -945,25 +1076,26 @@
     "saveChanges": "Save Changes",
     "saved": "Saved!",
     "unsavedChanges": "Unsaved changes",
-    "updated": "Updated",
-    "warning": "You should get the user's consent before making updates to this page. All changes you make here will also be visible to the user."
+    "updated": "Updated"
   },
   "formRenderer": {
     "components": {
       "file": {
         "browse": "upload from device",
-        "dropFiles": "Drop files to attach,",
+        "dropFiles": "Drop files to attach",
         "or": "or",
         "switchToFileUpload": "Switch to file upload",
         "takePicture": "Take Picture",
         "useCamera": "use camera"
+      },
+      "multiple": {
+        "addAnother": "Add another"
       }
     }
   },
   "homePage": {
     "editProfile": "Edit your community profile",
-    "manageContribution": "Manage contribution",
-    "manageYourContribution": "Manage your contribution",
+    "manageContribution": "Manage your contribution",
     "newCallout": "New callout!",
     "openCallouts": "Open callouts",
     "quickActions": "Quick actions",
@@ -975,26 +1107,20 @@
   },
   "item": {
     "status": {
-      "endedOn": "on {date}",
       "endsIn": "Ends in {duration}",
-      "startsIn": "starts in {duration}"
+      "startsIn": "Starts in {duration}"
     }
   },
   "join": {
     "absorbFeeForce": "{amount} contributions must absorb the {fee} fee.",
     "absorbFeeOptIn": "Yes, I'll absorb the {fee} fee.",
     "absorbFeeText": "Our payment processor charges us per transaction which means we receive less from monthly contributions. Are you happy to absorb the {fee} transaction fee?  Alternatively you could pay annually.",
-    "contribute": "Contribute {amount} / {period}",
-    "contribution": "Contribution",
+    "contribute": "Contribute {contribution}",
     "errors": {
       "confirmEmail": {
         "message": "Almost there! We just need to confirm your email address to finish setting up your membership.",
         "proceed": "We've sent you an email. Please click the link to proceed.",
         "title": "Confirm your email address"
-      },
-      "duplicateEmail": {
-        "message": "This email address is already registered. You can login to proceed.",
-        "title": "Duplicate email address"
       },
       "failed": {
         "backToJoin": "Back to join page",
@@ -1011,34 +1137,48 @@
     "now": "Join now!",
     "paymentMethod": "Payment method",
     "poweredBy": "Powered by beabee",
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "tax": {
+      "included": "Contribution includes {taxRate}% VAT."
+    }
   },
   "joinPayment": {
     "genericError": "Oops, something went wrong! Contact support if this happens again.",
     "goBack": "Did you miss something? {back}",
     "goBackButton": "Back to the previous screen",
     "note": "You'll be able to modify your contribution and access your payment history at any time in your member account",
-    "willBeContributing": "You'll be contributing {amount}/{period}"
+    "willBeContributing": "You'll be contributing {contribution}"
   },
   "joinSetup": {
     "confirmDetails": "Please confirm your details",
     "continue": "All good! Continue",
     "welcome": "Welcome {firstName}!"
   },
-  "locale": "en",
   "login": {
     "backTo": "Back to {newsroomName}",
     "forgotPassword": "Forgot your password?",
     "joinNow": "Join now!",
-    "login": "Login",
+    "lostMfaDevice": "Lost your 2FA device?",
     "notMember": "Not a member?",
-    "title": "Log in to your account",
-    "wrongCredentials": "Wrong password/email combination"
+    "title": "Log in to your account"
+  },
+  "lostDevice": {
+    "description": "Please enter your email address, and we will send you instructions on how to reset your 2FA.",
+    "message": "If there is an account associated with {email}, you will receive an email shortly. Check your spam folder if it doesn't appear.",
+    "title": "Lost your 2FA device?"
   },
   "membershipBuilder": {
     "steps": {
       "accountConfirmation": {
         "description": "Compose your confirmation screen",
+        "joinSurvey": {
+          "required": "Users must complete the survey before proceeding",
+          "slug": "Callout",
+          "slugHelp": "You can use any open callout that doesn't have an expiry date.",
+          "text": "You can ask your new users to complete a callout as part of the join flow. This is a great way to ask them why they joined or maybe you want some additional information off them to help them fit into the community.",
+          "textIntro": "Tell your users a bit about why you are asking for this information",
+          "title": "Join survey"
+        },
         "optInLabel": "Checkbox label",
         "optInText": "Text",
         "optInTitle": "Heading",
@@ -1070,7 +1210,8 @@
         "formSubtitle": "Subtitle",
         "formTitle": "Title",
         "minAmount": "Minimum amount",
-        "showAbsorbFee": "Ask about processing fee",
+        "showAbsorbFee": "Ask user about absorbing the payment fee",
+        "showNoContribution": "Allow user to join without a contribution",
         "suggestedAmounts": "Suggested contribution amounts",
         "text": "In this section you can edit, fine tune and preview your membership join form.",
         "title": "Join form"
@@ -1083,7 +1224,6 @@
     "admin": "Administration",
     "adminSettings": "Settings",
     "callouts": "Callouts",
-    "community": "Community",
     "contacts": "Contacts",
     "contribution": "Contribution",
     "dashboard": "Dashboard",
@@ -1130,8 +1270,11 @@
     "forgotPassword": "Forgot password",
     "join": "Join",
     "login": "Login",
+    "lostDevice": "Lost your 2FA device?",
     "notFound": "Page not found",
+    "resetDevice": "Reset 2FA device",
     "resetPassword": "Reset password",
+    "setPassword": "Set password",
     "setup": "Setup"
   },
   "paymentMethods": {
@@ -1149,6 +1292,11 @@
       "changeLabel": "Change card details",
       "label": "Card",
       "setLabel": "Your card details"
+    },
+    "s_paypal": {
+      "changeLabel": "Change PayPal details",
+      "label": "PayPal",
+      "setLabel": "Your PayPal details"
     },
     "s_sepa": {
       "changeLabel": "Change direct debit",
@@ -1177,15 +1325,18 @@
     },
     "showingOf": "Showing {start} to {end} payments out of {total}"
   },
+  "resetDevice": {
+    "description": "Enter your password to reset 2FA protection, you will be able to set up a new device once you are logged in.",
+    "failed": "Resetting device was unsuccessful, the link might have expired.",
+    "invalidPassword": "Invalid password",
+    "success": "Your 2FA device was successfully reset",
+    "title": "Reset your 2FA device?"
+  },
   "resetPassword": {
-    "changePassword": "Change password",
-    "confirmPassword": "Confirm password",
     "description": "Set a new password to login.",
-    "errorLink": "request another link",
-    "errorText": "The link might have expired, you could {newLink}.",
-    "errorTitle": "Password reset failed",
+    "failed": "Password reset failed, the link might have expired.",
     "login": "Login to your account",
-    "newPassword": "New password",
+    "lostDevice": "If you have lost your 2FA device please contact support",
     "success": "Your password has been reset.",
     "title": "Reset your password?"
   },
@@ -1226,5 +1377,8 @@
       "title": "Remove tag"
     },
     "name": "Name"
+  },
+  "taxRate": {
+    "invoiceName": "VAT"
   }
 }

@@ -21,13 +21,19 @@ meta:
 <script lang="ts" setup>
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import PageTitle from '../../../components/PageTitle.vue';
-import { GetContactData } from '../../../utils/api/api.interface';
-import { fetchContact } from '../../../utils/api/contact';
-import AppTabs from '../../../components/tabs/AppTabs.vue';
 import { useI18n } from 'vue-i18n';
-import { addBreadcrumb } from '../../../store/breadcrumb';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
+
+import PageTitle from '@components/PageTitle.vue';
+import AppTabs from '@components/tabs/AppTabs.vue';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import env from '../../../env';
+
+import { fetchContact } from '@utils/api/contact';
+
+import type { GetContactData } from '@type';
 
 const props = defineProps<{ id: string }>();
 
@@ -47,10 +53,14 @@ const tabs = computed(() =>
       id: 'adminContactsViewAccount',
       label: t('contactOverview.account'),
     },
-    {
-      id: 'adminContactsViewContribution',
-      label: t('contactOverview.contribution'),
-    },
+    ...(env.cnrMode
+      ? []
+      : [
+          {
+            id: 'adminContactsViewContribution',
+            label: t('contactOverview.contribution'),
+          },
+        ]),
     {
       id: 'adminContactsViewCallouts',
       label: t('contactOverview.callouts'),

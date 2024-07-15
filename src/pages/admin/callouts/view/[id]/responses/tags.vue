@@ -8,7 +8,7 @@ meta:
 <template>
   <div class="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
     <div>
-      <AppHeading class="mb-4">
+      <AppHeading>
         {{ t('calloutResponsePage.manageTags') }}
       </AppHeading>
 
@@ -24,7 +24,7 @@ meta:
         v-if="formVisible"
         class="rounded rounded-t-none border border-primary-20 bg-primary-10 p-4"
       >
-        <AppSubHeading class="mb-4">
+        <AppSubHeading>
           {{ t('tagEditor.addNewTag') }}
         </AppSubHeading>
         <TagEditorForm @cancel="formVisible = false" @save="handleNewTag" />
@@ -43,25 +43,22 @@ meta:
 <script lang="ts" setup>
 import { computed, onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppHeading from '../../../../../../components/AppHeading.vue';
-import AppSubHeading from '../../../../../../components/AppSubHeading.vue';
-import AppButton from '../../../../../../components/button/AppButton.vue';
-import TagEditorForm from '../../../../../../components/tag/TagEditorForm.vue';
-import TagEditorItem from '../../../../../../components/tag/TagEditorItem.vue';
-import { addBreadcrumb } from '../../../../../../store/breadcrumb';
-import {
+import AppHeading from '@components/AppHeading.vue';
+import AppSubHeading from '@components/AppSubHeading.vue';
+import AppButton from '@components/button/AppButton.vue';
+import TagEditorForm from '@components/tag/TagEditorForm.vue';
+import TagEditorItem from '@components/tag/TagEditorItem.vue';
+
+import { createTag, deleteTag, fetchTags, updateTag } from '@utils/api/callout';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import type {
   CreateCalloutTagData,
   GetCalloutDataWith,
   GetCalloutTagData,
   UpdateCalloutTagData,
-} from '../../../../../../utils/api/api.interface';
-
-import {
-  createTag,
-  deleteTag,
-  fetchTags,
-  updateTag,
-} from '../../../../../../utils/api/callout';
+} from '@type';
 
 const props = defineProps<{
   callout: GetCalloutDataWith<'form'>;

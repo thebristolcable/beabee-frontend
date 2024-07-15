@@ -1,9 +1,9 @@
 <template>
   <div>
     <form @submit.prevent="handleSubmit">
-      <AppHeading class="mb-2">{{ buttonText }}</AppHeading>
+      <AppHeading>{{ buttonText }}</AppHeading>
 
-      <p v-if="isManualActiveMember" class="mb-4">
+      <p v-if="isManualActiveMember" class="mb-3">
         {{
           t('contribution.manualPayment', {
             source:
@@ -36,6 +36,7 @@
         v-model:period="newContribution.period"
         v-model:paymentMethod="newContribution.paymentMethod"
         :content="content"
+        :payment-content="paymentContent"
         :show-period="showChangePeriod"
         :show-payment-method="!isAutoActiveMember"
       />
@@ -63,6 +64,13 @@
       >
         {{ buttonText }}
       </AppButton>
+
+      <p
+        v-if="paymentContent.taxRateEnabled"
+        class="-mt-2 mb-4 text-center text-sm"
+      >
+        {{ t('join.tax.included', { taxRate: paymentContent.taxRate }) }}
+      </p>
     </form>
 
     <AppModal
@@ -71,12 +79,12 @@
       class="w-full"
       @close="reset"
     >
-      <AppHeading class="mb-4">{{
-        t(`paymentMethods.${newContribution.paymentMethod}.setLabel`)
-      }}</AppHeading>
+      <AppHeading>
+        {{ t(`paymentMethods.${newContribution.paymentMethod}.setLabel`) }}
+      </AppHeading>
       <StripePayment
         :client-secret="stripeClientSecret"
-        :public-key="content.stripePublicKey"
+        :public-key="paymentContent.stripePublicKey"
         :email="email"
         :return-url="startContributionCompleteUrl"
         @loaded="onStripeLoaded"
@@ -94,25 +102,30 @@ import {
 import { computed, onBeforeMount, reactive, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import useVuelidate from '@vuelidate/core';
-import Contribution from '../../../contribution/Contribution.vue';
-import AppButton from '../../../button/AppButton.vue';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+
+import Contribution from '@components/contribution/Contribution.vue';
+import AppButton from '@components/button/AppButton.vue';
 import ProrateContribution from './ProrateContribution.vue';
-import { ContributionContent } from '../../../contribution/contribution.interface';
+import { type ContributionContent } from '@components/contribution/contribution.interface';
+import AppModal from '@components/AppModal.vue';
+import StripePayment from '@components/StripePayment.vue';
+import AppHeading from '@components/AppHeading.vue';
+import AppNotification from '@components/AppNotification.vue';
+
 import {
   startContribution,
   startContributionCompleteUrl,
   updateContribution,
-} from '../../../../utils/api/contact';
-import AppModal from '../../../AppModal.vue';
-import StripePayment from '../../../StripePayment.vue';
-import { currentUser } from '../../../../store/currentUser';
-import { formatLocale } from '../../../../utils/dates';
-import AppHeading from '../../../AppHeading.vue';
-import { isRequestError } from '../../../../utils/api';
-import { ContributionInfo } from '../../../../utils/api/api.interface';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
-import { addNotification } from '../../../../store/notifications';
-import AppNotification from '../../../AppNotification.vue';
+} from '@utils/api/contact';
+
+import { currentUser } from '@store/currentUser';
+import { formatLocale } from '@utils/dates';
+import { isRequestError } from '@utils/api';
+
+import { addNotification } from '@store/notifications';
+
+import type { ContentPaymentData, ContributionInfo } from '@type';
 
 const validation = useVuelidate();
 
@@ -122,6 +135,7 @@ const emit = defineEmits(['update:modelValue']);
 const props = defineProps<{
   modelValue: ContributionInfo;
   content: ContributionContent;
+  paymentContent: ContentPaymentData;
 }>();
 
 const newContribution = reactive({
@@ -176,10 +190,10 @@ const buttonText = computed(() =>
   isManualActiveMember.value
     ? t('contribution.updatePaymentType')
     : isActiveMember.value
-    ? t('contribution.updateContribution')
-    : isExpiringMember.value
-    ? t('contribution.restartContribution')
-    : t('contribution.startContribution')
+      ? t('contribution.updateContribution')
+      : isExpiringMember.value
+        ? t('contribution.restartContribution')
+        : t('contribution.startContribution')
 );
 
 async function handleCreate() {
@@ -201,7 +215,7 @@ async function handleUpdate() {
       title: t('contribution.updatedContribution'),
     });
   } catch (err) {
-    if (isRequestError(err, 'cant-update-contribution')) {
+    if (isRequestError(err, ['cant-update-contribution'])) {
       cantUpdate.value = true;
     }
   }

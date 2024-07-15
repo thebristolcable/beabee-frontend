@@ -1,9 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { currentUser, initStore, generalContent, isEmbed } from '../store';
-import i18n from './i18n';
+import { currentUser, initStore, isEmbed } from '../store';
 
 import routes from '~pages';
-import { watch } from 'vue';
+import env from '@env';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -13,18 +12,17 @@ const router = createRouter({
   },
 });
 
-watch([i18n.global.locale, router.currentRoute], ([, route]) => {
-  document.title =
-    (route.meta.pageTitle ? i18n.global.t(route.meta.pageTitle) + ' - ' : '') +
-    generalContent.value.organisationName;
-});
-
 router.beforeEach(async (to) => {
   // Block route for initial store load, this will only happen once
   await initStore;
 
   // Ensure route is embeddable if we are embedded
   if (isEmbed && !to.meta.embeddable) {
+    return false;
+  }
+
+  // Don't load routes that are not available in CNR mode
+  if (env.cnrMode && to.meta.noCnrMode) {
     return false;
   }
 

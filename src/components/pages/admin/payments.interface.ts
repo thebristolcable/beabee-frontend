@@ -1,12 +1,12 @@
 import { computed } from 'vue';
 import i18n from '../../../lib/i18n';
-import { Header } from '../../table/table.interface';
+import { type Header } from '../../table/table.interface';
 import {
-  FilterGroup,
-  FilterItems,
+  type FilterGroup,
+  type FilterItems,
   withLabel,
 } from '../../search/search.interface';
-import { PaymentFilterName, paymentFilters } from '@beabee/beabee-common';
+import { type PaymentFilterName, paymentFilters } from '@beabee/beabee-common';
 
 const { t } = i18n.global;
 
@@ -66,6 +66,7 @@ export const filterGroups = computed<FilterGroup<PaymentFilterName>[]>(() => [
 ]);
 
 export const filterItems = computed<FilterItems<PaymentFilterName>>(() => ({
+  id: withLabel(paymentFilters.id, t('payments.data.id')),
   chargeDate: withLabel(
     paymentFilters.chargeDate,
     t('payments.data.chargeDate')
@@ -73,8 +74,9 @@ export const filterItems = computed<FilterItems<PaymentFilterName>>(() => ({
   contact: withLabel(paymentFilters.contact, t('payments.data.contact')),
   amount: withLabel(paymentFilters.amount, t('payments.data.amount')),
   status: withLabel(paymentFilters.status, t('payments.data.status'), {
-    successful: t('common.paymentStatus.successful'),
+    draft: t('common.paymentStatus.draft'),
     pending: t('common.paymentStatus.pending'),
+    successful: t('common.paymentStatus.successful'),
     failed: t('common.paymentStatus.failed'),
     cancelled: t('common.paymentStatus.cancelled'),
   }),

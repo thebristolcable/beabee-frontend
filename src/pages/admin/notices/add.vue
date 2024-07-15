@@ -7,26 +7,29 @@ meta:
 
 <template>
   <PageTitle :title="t('addNotice.title')" border></PageTitle>
-  <div class="grid lg:grid-cols-2">
-    <NoticeForm :notice="undefined" @submit="handleSubmit"></NoticeForm>
-  </div>
+  <App2ColGrid>
+    <template #col1>
+      <NoticeForm :notice="undefined" @submit="handleSubmit"></NoticeForm>
+    </template>
+  </App2ColGrid>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-
-import PageTitle from '../../../components/PageTitle.vue';
-import NoticeForm from '../../../components/notice/NoticeForm.vue';
-import { createNotice } from '../../../utils/api/notice';
-import {
-  CreateNoticeData,
-  GetNoticeData,
-} from '../../../utils/api/api.interface';
-import { addBreadcrumb } from '../../../store/breadcrumb';
 import { faSignHanging } from '@fortawesome/free-solid-svg-icons';
-import { addNotification } from '../../../store/notifications';
+
+import PageTitle from '@components/PageTitle.vue';
+import NoticeForm from '@components/notice/NoticeForm.vue';
+import App2ColGrid from '@components/App2ColGrid.vue';
+
+import { createNotice } from '@utils/api/notice';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+import { addNotification } from '@store/notifications';
+
+import type { CreateNoticeData, GetNoticeData } from '@type';
 
 const { t } = useI18n();
 const router = useRouter();

@@ -1,6 +1,6 @@
 import { computed } from 'vue';
-import { MenuSection } from './menu-list.interface';
-import { generalContent } from '../../store/generalContent';
+import type { MenuSection } from './menu-list.interface';
+import { generalContent } from '@store/generalContent';
 import {
   faAddressCard,
   faBullhorn,
@@ -12,7 +12,7 @@ import {
   faSignHanging,
   faUsers,
 } from '@fortawesome/free-solid-svg-icons';
-import env from '../../env';
+import env from '@env';
 
 export const menu = computed<MenuSection[]>(() =>
   env.cnrMode
@@ -69,6 +69,11 @@ export const adminMenu: MenuSection[] = env.cnrMode
       {
         title: 'menu.admin',
         items: [
+          {
+            title: 'menu.dashboard',
+            href: '/admin',
+            icon: faChartLine,
+          },
           {
             title: 'menu.contacts',
             href: '/admin/contacts',

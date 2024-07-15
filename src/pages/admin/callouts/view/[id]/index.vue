@@ -15,7 +15,7 @@ meta:
       </div>
 
       <AppHeading>{{ t('calloutAdminOverview.settings.label') }}</AppHeading>
-      <AppInfoList>
+      <AppInfoList class="mb-4">
         <AppInfoListItem
           :name="t('calloutAdminOverview.settings.openTo.label')"
           :value="
@@ -59,13 +59,6 @@ meta:
             ? t('actions.view')
             : t('actions.preview')
         }}
-      </ActionButton>
-      <ActionButton
-        v-if="callout.status === ItemStatus.Open"
-        :icon="faReply"
-        :to="`/callouts/${callout.slug}`"
-      >
-        {{ t('actions.participate') }}
       </ActionButton>
       <ActionButton
         :icon="faPencilAlt"
@@ -112,25 +105,29 @@ import { ItemStatus } from '@beabee/beabee-common';
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { GetCalloutDataWith } from '../../../../../utils/api/api.interface';
-import { deleteCallout, updateCallout } from '../../../../../utils/api/callout';
-import AppHeading from '../../../../../components/AppHeading.vue';
-import AppInfoList from '../../../../../components/AppInfoList.vue';
-import AppInfoListItem from '../../../../../components/AppInfoListItem.vue';
-import ActionButton from '../../../../../components/button/ActionButton.vue';
-import CalloutSummary from '../../../../../components/callout/CalloutSummary.vue';
-import { createCallout } from '../../../../../utils/api/callout';
-import AppConfirmDialog from '../../../../../components/AppConfirmDialog.vue';
-import { addNotification } from '../../../../../store/notifications';
+
+import {
+  deleteCallout,
+  replicateCallout,
+  updateCallout,
+} from '@utils/api/callout';
+import AppHeading from '@components/AppHeading.vue';
+import AppInfoList from '@components/AppInfoList.vue';
+import AppInfoListItem from '@components/AppInfoListItem.vue';
+import ActionButton from '@components/button/ActionButton.vue';
+import CalloutSummary from '@components/callout/CalloutSummary.vue';
+import AppConfirmDialog from '@components/AppConfirmDialog.vue';
+import { addNotification } from '@store/notifications';
 import {
   faClone,
   faEye,
   faPencilAlt,
-  faReply,
   faTrash,
   faHourglassStart,
   faHourglassEnd,
 } from '@fortawesome/free-solid-svg-icons';
+
+import type { GetCalloutDataWith } from '@type';
 
 const props = defineProps<{
   callout: GetCalloutDataWith<'form' | 'responseCount'>;
@@ -169,18 +166,10 @@ async function reopenThisCallout() {
 }
 
 async function replicateThisCallout() {
-  const newCalloutData = {
-    ...props.callout,
-    slug: props.callout.slug + '-copy',
-    title: props.callout.title + ' copy',
+  const newCallout = await replicateCallout(props.callout.id, {
     starts: null,
     expires: null,
-    // TODO: Remove these extra properties, should be handled elsewhere
-    status: undefined,
-    responseCount: undefined,
-  };
-
-  const newCallout = await createCallout(newCalloutData);
+  });
   router.push({
     path: '/admin/callouts/edit/' + newCallout.slug,
     query: { replicated: null },

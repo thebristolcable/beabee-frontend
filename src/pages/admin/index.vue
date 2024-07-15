@@ -10,10 +10,10 @@ meta:
   <p class="mb-8">
     {{ t('adminDashboard.welcomeBack', { firstName: currentUser?.firstname }) }}
   </p>
-  <div class="flex flex-col gap-8 lg:flex-row">
-    <div class="flex-1 basis-5/12">
+  <div class="grid grid-cols-12 gap-6">
+    <div v-if="!env.cnrMode" class="col-span-12 md:col-span-5 xl:col-span-5">
       <AppHeading>{{ t('adminDashboard.numbers.title') }}</AppHeading>
-      <div v-if="stats" class="mb-8 mt-4 flex gap-4">
+      <div v-if="stats" class="mb-6 flex gap-4">
         <KeyStat
           :label="t('adminDashboard.numbers.revenue')"
           :stat="
@@ -36,28 +36,25 @@ meta:
         />
       </div>
       <AppHeading>{{ t('adminDashboard.mostRecentMembers.title') }}</AppHeading>
-      <div class="mb-5 mt-1">
-        <div
+      <ul>
+        <li
           v-for="member in recentMembers"
           :key="member.id"
-          class="my-3 flex justify-between gap-4"
+          class="mb-3 flex gap-4"
         >
           <router-link :to="'/admin/contacts/' + member.id" class="text-link">
             {{ member.displayName }}
           </router-link>
-          <span class="text-sm font-semibold text-body-60">
-            {{
-              t('common.timeAgo', {
-                time: formatDistanceLocale(new Date(), member.joined),
-              })
-            }}
-          </span>
-        </div>
-      </div>
+          <AppTime
+            class="flex-1 text-right text-sm font-semibold text-body-60"
+            :datetime="member.joined"
+          />
+        </li>
+      </ul>
     </div>
-    <div class="flex-1 basis-7/12">
+    <div class="col-span-12 md:col-span-7 xl:col-span-7">
       <AppHeading>{{ t('adminDashboard.latestCallout.title') }}</AppHeading>
-      <div class="relative mb-8 mt-4 block rounded bg-white p-4">
+      <div class="relative mb-8 block rounded bg-white p-4">
         <div v-if="latestCallout">
           <CalloutSummary :callout="latestCallout" />
           <router-link
@@ -82,7 +79,7 @@ meta:
       </a>
     </div>
   </div>
-  <div class="mt-8 gap-12 lg:flex">
+  <div class="mt-8 gap-6 lg:flex">
     <HintBox class="content-i18n" :hint="t('adminDashboard.hint1')" />
     <HintBox class="content-i18n" :hint="t('adminDashboard.hint2')" />
     <HintBox class="content-i18n" :hint="t('adminDashboard.hint3')" />
@@ -95,25 +92,24 @@ meta:
 <script lang="ts" setup>
 import { ItemStatus } from '@beabee/beabee-common';
 import { useI18n } from 'vue-i18n';
-import PageTitle from '../../components/PageTitle.vue';
-import { currentUser } from '../../store';
-import AppHeading from '../../components/AppHeading.vue';
-import KeyStat from '../../components/pages/admin/KeyStat.vue';
+import PageTitle from '@components/PageTitle.vue';
+import { currentUser } from '@store';
+import AppHeading from '@components/AppHeading.vue';
+import KeyStat from '@components/pages/admin/KeyStat.vue';
 import { computed, onBeforeMount, ref } from 'vue';
-import {
-  GetCalloutDataWith,
-  GetContactData,
-  GetStatsData,
-} from '../../utils/api/api.interface';
-import { fetchContacts } from '../../utils/api/contact';
-import { formatDistanceLocale } from '../../utils/dates';
-import HintBox from '../../components/pages/admin/HintBox.vue';
-import { fetchCallouts } from '../../utils/api/callout';
-import CalloutSummary from '../../components/callout/CalloutSummary.vue';
-import { fetchStats } from '../../utils/api/stats';
+
+import { fetchContacts } from '@utils/api/contact';
+import HintBox from '@components/pages/admin/HintBox.vue';
+import { fetchCallouts } from '@utils/api/callout';
+import CalloutSummary from '@components/callout/CalloutSummary.vue';
+import { fetchStats } from '@utils/api/stats';
 import { subDays } from 'date-fns';
-import { addBreadcrumb } from '../../store/breadcrumb';
+import { addBreadcrumb } from '@store/breadcrumb';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
+import env from '../../env';
+import AppTime from '@components/AppTime.vue';
+
+import type { GetCalloutDataWith, GetContactData, GetStatsData } from '@type';
 
 const { n, t } = useI18n();
 

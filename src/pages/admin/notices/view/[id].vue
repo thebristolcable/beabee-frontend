@@ -10,9 +10,7 @@ meta:
     <PageTitle :title="`${notice.name}`"></PageTitle>
     <div class="flex flex-col-reverse gap-8 lg:flex-row lg:justify-between">
       <div class="flex-initial basis-3/4">
-        <AppHeading class="mb-4">
-          {{ t('noticeAdminOverview.summary') }}
-        </AppHeading>
+        <AppHeading>{{ t('noticeAdminOverview.summary') }}</AppHeading>
         <AppNotice :notice="notice"></AppNotice>
         <ItemStatus :item="notice"></ItemStatus>
         <ItemDateRange :item="notice" />
@@ -48,23 +46,27 @@ meta:
 
 <script lang="ts" setup>
 import { computed, onBeforeMount, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import AppConfirmDialog from '../../../../components/AppConfirmDialog.vue';
-import AppHeading from '../../../../components/AppHeading.vue';
-import AppNotice from '../../../../components/AppNotice.vue';
-import PageTitle from '../../../../components/PageTitle.vue';
-import ActionButton from '../../../../components/button/ActionButton.vue';
-import { GetNoticeData } from '../../../../utils/api/api.interface';
-import { deleteNotice, fetchNotice } from '../../../../utils/api/notice';
-import ItemStatus from '../../../../components/item/ItemStatusText.vue';
-import ItemDateRange from '../../../../components/item/ItemDateRange.vue';
 import { useRouter } from 'vue-router';
-import { addBreadcrumb } from '../../../../store/breadcrumb';
+import { useI18n } from 'vue-i18n';
 import {
   faPencilAlt,
   faSignHanging,
   faTrash,
 } from '@fortawesome/free-solid-svg-icons';
+
+import AppConfirmDialog from '@components/AppConfirmDialog.vue';
+import AppHeading from '@components/AppHeading.vue';
+import AppNotice from '@components/AppNotice.vue';
+import PageTitle from '@components/PageTitle.vue';
+import ActionButton from '@components/button/ActionButton.vue';
+import ItemStatus from '@components/item/ItemStatusText.vue';
+import ItemDateRange from '@components/item/ItemDateRange.vue';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import { deleteNotice, fetchNotice } from '@utils/api/notice';
+
+import type { GetNoticeData } from '@type';
 
 const props = defineProps<{ id: string }>();
 const { t } = useI18n();

@@ -1,7 +1,9 @@
-import { CalloutFormSchema } from '@beabee/beabee-common';
-import { computed } from 'vue';
+import { computed, type Raw, type Component } from 'vue';
 import i18n from '../../../../lib/i18n';
-import { CalloutMapSchema } from '../../../../utils/api/api.interface';
+import { type AppStepperStep } from '../../../../type/app-stepper-step';
+
+import type { CalloutMapSchema, LocaleProp } from '@type';
+import type { FormBuilderSlide } from '@components/form-builder/form-builder.interface';
 
 const { t } = i18n.global;
 
@@ -18,25 +20,27 @@ export const buckets = computed(() => [
 ]);
 
 export interface ContentStepProps {
-  introText: string;
-  formSchema: CalloutFormSchema;
+  slides: FormBuilderSlide[];
+  componentText: Record<string, LocaleProp>;
 }
 
 export interface TitleAndImageStepProps {
-  title: string;
-  description: string;
+  title: LocaleProp;
+  description: LocaleProp;
   coverImageURL: string;
+  introText: LocaleProp;
   autoSlug: string;
   useCustomSlug: boolean;
   slug: string;
   overrideShare: boolean;
-  shareTitle: string;
-  shareDescription: string;
+  shareTitle: LocaleProp;
+  shareDescription: LocaleProp;
 }
 
 export interface SettingsStepProps {
   whoCanTakePart: 'members' | 'everyone';
   allowAnonymousResponses: 'none' | 'guests' | 'all';
+  requireCaptcha: 'none' | 'guest' | 'all';
   showOnUserDashboards: boolean;
   multipleResponses: boolean;
   usersCanEditAnswers: boolean;
@@ -46,14 +50,16 @@ export interface SettingsStepProps {
   responseTitleProp: string;
   responseImageProp: string;
   responseImageFilter: string;
+  responseLinks: { text: string; url: string }[];
   mapSchema: CalloutMapSchema;
+  locales: string[];
 }
 
 export interface EndMessageStepProps {
   whenFinished: 'message' | 'redirect';
-  thankYouTitle: string;
-  thankYouText: string;
-  thankYouRedirect: string;
+  thankYouTitle: LocaleProp;
+  thankYouText: LocaleProp;
+  thankYouRedirect: LocaleProp;
 }
 export interface MailchimpSyncStepProps {
   useMailchimpSync: boolean;
@@ -77,11 +83,13 @@ export interface CalloutStepsProps {
   dates: DateAndDurationStepProps;
 }
 
+export interface CalloutStep<T> extends AppStepperStep {
+  validated: boolean;
+  error: boolean;
+  data: T;
+  component: Raw<Component>;
+}
+
 export type CalloutSteps = {
-  [P in keyof CalloutStepsProps]: {
-    title: string;
-    validated: boolean;
-    error: boolean;
-    data: CalloutStepsProps[P];
-  };
+  [P in keyof CalloutStepsProps]: CalloutStep<CalloutStepsProps[P]>;
 };

@@ -1,13 +1,11 @@
-import { JoinContent } from '../../utils/api/api.interface';
+import type { ContentJoinData } from '@type';
 
 export type ContributionContent = Pick<
-  JoinContent,
+  ContentJoinData,
   | 'initialAmount'
   | 'initialPeriod'
   | 'minMonthlyAmount'
   | 'showAbsorbFee'
   | 'periods'
   | 'paymentMethods'
-  | 'stripePublicKey'
-  | 'stripeCountry'
 >;

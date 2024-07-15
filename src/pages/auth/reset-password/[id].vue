@@ -7,72 +7,76 @@ meta:
 </route>
 
 <template>
-  <form @submit.prevent>
-    <h1 class="mb-6 text-2.5xl">
-      {{ mode === 'set' ? t('setPassword.title') : t('resetPassword.title') }}
-    </h1>
+  <AuthBox>
+    <AppForm
+      :button-text="
+        mode === 'set' ? t('common.login') : t('actions.changePassword')
+      "
+      :success-text="t('resetPassword.success')"
+      :error-text="{ unknown: t('resetPassword.failed') }"
+      inline-error
+      full-button
+      @submit="handleSubmit"
+    >
+      <AppTitle>
+        {{ mode === 'set' ? t('setPassword.title') : t('resetPassword.title') }}
+      </AppTitle>
 
-    <div class="mb-5">
-      <p class="font-semibold">
+      <p class="mb-4 font-semibold">
         {{
           mode === 'set'
             ? t('setPassword.description')
             : t('resetPassword.description')
         }}
       </p>
-    </div>
 
-    <div class="mb-5">
-      <AppInput
-        v-model="data.password"
-        :label="t('resetPassword.newPassword')"
-        :info-message="t('form.passwordInfo')"
-        type="password"
-        name="password"
-        required
-      />
-    </div>
+      <div class="mb-4">
+        <AppInput
+          v-model="data.password"
+          :label="t('form.newPassword')"
+          :info-message="t('form.passwordInfo')"
+          type="password"
+          name="password"
+          autocomplete="new-password"
+          required
+        />
+      </div>
 
-    <div class="mb-6">
-      <AppInput
-        v-model="data.repeatPassword"
-        :label="t('resetPassword.confirmPassword')"
-        type="password"
-        name="confirmPassword"
-        :same-as="data.password"
-        required
-      />
-    </div>
+      <div class="mb-4">
+        <AppInput
+          v-model="data.repeatPassword"
+          :label="t('form.newPasswordConfirm')"
+          type="password"
+          name="confirmPassword"
+          autocomplete="new-password"
+          :same-as="data.password"
+          required
+        />
+      </div>
 
-    <AppNotification
-      v-if="hasError"
-      variant="error"
-      class="mb-4"
-      :title="t('resetPassword.errorTitle')"
-    >
-      <p>
-        <i18n-t keypath="resetPassword.errorText">
-          <template #newLink>
-            <router-link to="/auth/forgot-password" class="underline">{{
-              t('resetPassword.errorLink')
-            }}</router-link>
-          </template>
-        </i18n-t>
-      </p>
-    </AppNotification>
+      <template v-if="hasMFAEnabled">
+        <AppNotification
+          variant="info"
+          class="mb-4"
+          :title="t('form.errorMessages.api.mfa-token-required')"
+        />
 
-    <AppButton
-      variant="link"
-      :disabled="validation.$invalid || loading"
-      class="mb-4 w-full"
-      type="submit"
-      @click="handleSubmit"
-      >{{
-        mode === 'set' ? t('common.login') : t('resetPassword.changePassword')
-      }}</AppButton
-    >
+        <div class="mb-4">
+          <AppInput
+            v-model="data.token"
+            type="text"
+            name="verifyCode"
+            required
+            min="6"
+            max="6"
+            :label="t('accountPage.mfa.codeInput.label')"
+            :info-message="t('resetPassword.lostDevice')"
+          />
+        </div>
+      </template>
+    </AppForm>
 
-    <div v-if="mode === 'reset'" class="text-center">
+    <div v-if="mode === 'reset'" class="mt-4 text-center">
       <router-link
         variant="link"
         to="/auth/login"
@@ -80,21 +84,27 @@ meta:
         >{{ t('resetPassword.login') }}</router-link
       >
     </div>
-  </form>
+  </AuthBox>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
-import AppInput from '../../../components/forms/AppInput.vue';
-import AppButton from '../../../components/button/AppButton.vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import useVuelidate from '@vuelidate/core';
-import { resetPassword } from '../../../utils/api/auth';
-import { updateCurrentUser } from '../../../store';
-import { isInternalUrl } from '../../../utils';
-import AppNotification from '../../../components/AppNotification.vue';
-import { addNotification } from '../../../store/notifications';
+
+import AppInput from '@components/forms/AppInput.vue';
+import AppNotification from '@components/AppNotification.vue';
+import AppTitle from '@components/AppTitle.vue';
+import AuthBox from '@components/AuthBox.vue';
+import AppForm from '@components/forms/AppForm.vue';
+
+import { resetPasswordComplete } from '@utils/api/reset-security-flow';
+import { isInternalUrl } from '@utils/index';
+import { isRequestError } from '@utils/api';
+
+import { updateCurrentUser } from '@store/index';
+
+import { RESET_SECURITY_FLOW_ERROR_CODE } from '@enums/reset-security-flow-error-code';
 
 const props = withDefaults(
   defineProps<{
@@ -111,33 +121,37 @@ const router = useRouter();
 
 const redirectTo = route.query.next as string | undefined;
 
-const loading = ref(false);
-const hasError = ref(false);
-const data = reactive({ password: '', repeatPassword: '' });
-
-const validation = useVuelidate();
+const hasMFAEnabled = ref(false);
+const data = reactive({ password: '', repeatPassword: '', token: '' });
 
 async function handleSubmit() {
-  loading.value = true;
-  hasError.value = false;
-
   try {
-    await resetPassword(data.password, props.id);
+    await resetPasswordComplete(
+      props.id,
+      data.password,
+      data.token || undefined
+    );
     await updateCurrentUser();
+
     if (isInternalUrl(redirectTo)) {
       // TODO: use router when legacy app is gone
       window.location.href = redirectTo;
     } else {
-      addNotification({
-        variant: 'success',
-        title: t('resetPassword.success'),
-      });
-      router.push({ path: '/profile' });
+      router.push({ path: '/profile/account' });
     }
   } catch (err) {
-    hasError.value = true;
-  }
+    if (
+      isRequestError(
+        err,
+        [RESET_SECURITY_FLOW_ERROR_CODE.MFA_TOKEN_REQUIRED],
+        [400]
+      )
+    ) {
+      hasMFAEnabled.value = true;
+      return false;
+    }
 
-  loading.value = false;
+    throw err;
+  }
 }
 </script>

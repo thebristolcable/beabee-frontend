@@ -7,13 +7,11 @@ meta:
 
 <template>
   <Suspense>
-    <AuthBox>
-      <SetupForm
-        :setup-content="setupContent"
-        :loading="saving"
-        @submit="completeSetup"
-      />
-    </AuthBox>
+    <SetupForm
+      :setup-content="setupContent"
+      :loading="isSaving"
+      @submit="handleSubmitSetup"
+    />
   </Suspense>
 </template>
 
@@ -21,19 +19,20 @@ meta:
 import { NewsletterStatus } from '@beabee/beabee-common';
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import AuthBox from '../../components/AuthBox.vue';
-import { updateContact } from '../../utils/api/contact';
-import {
-  JoinSetupContent,
-  UpdateContactData,
-} from '../../utils/api/api.interface';
-import { fetchContent } from '../../utils/api/content';
-import SetupForm from '../../components/pages/join/SetupForm.vue';
-import { SetupContactData } from '../../components/pages/join/join.interface';
+
+import SetupForm from '@components/pages/join/SetupForm.vue';
+
+import { fetchContent } from '@utils/api/content';
+import { updateContact } from '@utils/api/contact';
+
+import { updateCurrentUser } from '@store';
+
+import type { SetupContactData } from '@components/pages/join/join.interface';
+import type { ContentJoinSetupData, UpdateContactData } from '@type';
 
 const router = useRouter();
 
-const setupContent = ref<JoinSetupContent>({
+const setupContent = ref<ContentJoinSetupData>({
   welcome: '',
   newsletterText: '',
   newsletterOptIn: '',
@@ -43,12 +42,15 @@ const setupContent = ref<JoinSetupContent>({
   mailTitle: '',
   mailText: '',
   mailOptIn: '',
+  surveySlug: '',
+  surveyRequired: false,
+  surveyText: '',
 });
 
-const saving = ref(false);
+const isSaving = ref(false);
 
-async function completeSetup(data: SetupContactData) {
-  saving.value = true;
+async function handleSubmitSetup(data: SetupContactData) {
+  isSaving.value = true;
 
   const updateContactData: UpdateContactData = {
     email: data.email,
@@ -73,11 +75,13 @@ async function completeSetup(data: SetupContactData) {
     };
   }
 
-  try {
-    await updateContact('me', updateContactData);
+  const updatedContact = await updateContact('me', updateContactData);
+  await updateCurrentUser(updatedContact);
+
+  if (setupContent.value.surveySlug) {
+    router.push({ path: '/join/survey' });
+  } else {
     router.push({ path: '/profile', query: { welcomeMessage: 'true' } });
-  } catch (err) {
-    saving.value = false;
   }
 }
 

@@ -1,10 +1,46 @@
 {
   "accountPage": {
-    "changePassword": "Passwort ändern",
     "contactInformation": "Kontaktdaten",
     "deliveryAddress": "Adresse",
     "deliveryOptIn": "Postsendung",
     "loginDetail": "Anmeldedaten",
+    "mfa": {
+      "codeInput": {
+        "info": "Wenn du dein 2FA-Gerät verloren hast, wende dich bitte an den Support.",
+        "label": "Code"
+      },
+      "confirmDelete": {
+        "desc": "Möchtest du die Multi-Faktor-Authentifizierung wirklich deaktivieren? \nDanach brauchst du nur noch dein Passwort zum Anmelden. Bitte vergiss \nnicht, den Eintrag in deiner Authenticator-App zu löschen. Du kannst \ndiese Funktion jederzeit wieder einschalten.",
+        "descToken": "Um 2FA zu deaktivieren, gib bitte deinen aktuellen 2FA-Code ein:",
+        "title": "2FA deaktivieren"
+      },
+      "createUnknownErrorNotification": "Die 2-Faktor-Authentifizierung konnte aufgrund eines unbekannten Fehlers nicht gespeichert werden. Bitte versuche es erneut oder kontaktiere den Support.",
+      "deleteUnknownErrorNotification": "Die 2-Faktor-Authentifizierung konnte aufgrund eines unbekannten Fehlers nicht entfernt werden. Bitte versuche es erneut oder kontaktiere den Support.",
+      "disabledNotification": "Zwei-Faktor Authentifizierung erfolgreich deaktiviert",
+      "enabledNotification": "Zwei-Faktor Authentifizierung erfolgreich aktiviert",
+      "enterCode": {
+        "desc": "Gebe den Code ein, der in deiner Authentifizierungs-App angezeigt wird.",
+        "title": "Überprüfung"
+      },
+      "modalTitle": "Aktivere 2-Faktor Authentifizierung",
+      "result": {
+        "invalidCode": "Der Code konnte nicht bestätigt werden. Bitte versuche es erneut oder kontaktiere den Support.",
+        "successful": "Die 2-Faktor Authentifizierung wurde erfolgreich eingerichtet.",
+        "title": "Fertig"
+      },
+      "scan": {
+        "desc": "Scanne den unten stehenden QR-Code mit deiner Authentifizierungs-App.",
+        "title": "QR-Code"
+      },
+      "secretInput": {
+        "desc": "Oder gib einfach den folgenden Code in deine Authenticator-App ein.",
+        "label": "Secret"
+      },
+      "title": "2-Faktor Authentifizierung",
+      "validateButton": {
+        "label": "Token überprüfen"
+      }
+    },
     "newsletter": {
       "cantUpdate": "Um den Newsletter-Status dieses Kontakts zu ändern, wende dich bitte an support{'@'}beabee.io.",
       "currentStatus": {
@@ -25,14 +61,23 @@
   "actions": {
     "add": "Hinzufügen",
     "back": "Zurück",
+    "backToLogin": "Zurück zum Login",
     "cancel": "Abbrechen",
+    "changePassword": "Passwort ändern",
     "chooseFile": "Datei auswählen",
+    "close": "Schließen",
     "continue": "Weiter",
+    "copy": "Kopieren",
     "create": "Erstellen",
     "delete": "Löschen",
+    "disable": "Deaktivieren",
     "edit": "Bearbeiten",
+    "enable": "Aktivieren",
     "endnow": "Jetzt beenden",
     "export": "Exportieren",
+    "getStarted": "Starten",
+    "goBack": "Zurück",
+    "next": "Weiter",
     "noBack": "Nein, gehe zurück",
     "participate": "Teilnehmen",
     "preview": "Vorschau",
@@ -40,18 +85,24 @@
     "reopen": "Wieder aktivieren",
     "replicate": "Kopieren",
     "reset": "Zurücksetzen",
+    "reset2FA": "Zwei-Faktor-Authentisierung",
+    "resetPassword": "Passwort zurücksetzen",
+    "respond": "Antworten",
     "revertToDraft": "Zu Entwurf zurückkehren",
     "save": "Speichern",
     "saveAndAnother": "Speichern und weiteren hinzufügen",
     "saveDraft": "Entwurf speichern",
     "schedule": "Planen",
     "search": "Suchen",
+    "share": "Teilen",
+    "skip": "Überspringen",
     "submit": "Abschicken",
     "unpublish": "Veröffentlichung aufheben",
     "update": "Änderungen speichern",
     "view": "Anzeigen",
-    "yesDelete": "Ja, Hinweis löschen",
-    "yesRemove": "Ja, löschen"
+    "yesDelete": "Ja, löschen",
+    "yesDisable": "Ja, deaktivieren",
+    "yesRemove": "Ja, entfernen"
   },
   "addContact": {
     "contactSaved": "Kontakt gespeichert",
@@ -108,6 +159,12 @@
       },
       "copied": "API Key in die Zwischenablage kopiert",
       "create": "Neuen API Key erstellen",
+      "expires": {
+        "days": "In {n} Tagen",
+        "never": "Nie"
+      },
+      "expiresHelp": "Aus Sicherheitsgründen sollte immer ein Enddatum eingestellt werden, um zu verhindern, dass das System langfristig unbefugt genutzt wird.",
+      "expiresNeverWarning": "Ich habe das Risiko verstanden, kein Enddatum festzulegen.",
       "label": "API Keys",
       "showingOf": "API Keys {start} bis {end} von {total} werden angezeigt."
     },
@@ -148,6 +205,11 @@
         "title": "Soziale Netzwerke",
         "twitterHandle": "Twitter-Handle"
       }
+    },
+    "payment": {
+      "paymentTitle": "Zahlungen",
+      "taxRate": "Mehrwertsteuersatz",
+      "taxRateEnabled": "Mehrwertsteuer aktivieren"
     },
     "theme": {
       "bodyFont": "Text",
@@ -258,20 +320,26 @@
     "data": {
       "createdAt": "Erstellt",
       "description": "Beschreibung",
+      "expires": "Enddatum",
       "token": "Token"
     }
   },
   "callout": {
+    "actions": {
+      "updateResponse": "Antwort bearbeiten"
+    },
     "addAPoint": "Klicken Sie dort auf die Karte, wo Sie einen Ort ergänzen möchten",
     "addLocation": "Neuen Ort eingeben",
-    "closed": "Dieser Callout ist beendet.",
+    "confirmHuman": "Bitte bestätige, dass du ein Mensch bist",
     "contactDetails": "Kontaktdaten",
+    "ended": "Dieser Callout ist seit dem {date} beendet.",
     "form": {
       "email": "Deine E-Mail-Adresse",
       "guestFieldsMissing": "Bitte gib' uns Deine Kontaktdaten. ",
       "name": "Dein Name",
       "submittingResponseError": "Es gab ein Problem bei der Übermittlung deiner Antworten. Bitte versuche es erneut."
     },
+    "getStarted": "Starten",
     "joinNow": "Mitglied werden",
     "loginToYourAccount": "Einloggen",
     "membersOnly": "An diesem Callout können nur zahlende Mitglieder teilnehmen. Um teilzunehmen",
@@ -285,9 +353,10 @@
     "updateContribution": "Bitte ändere deinen Beitrag. ",
     "views": {
       "gallery": "Galerie",
-      "map": "Karten"
+      "map": "Karte"
     },
-    "youResponded": "Du hast geantwortet ♥"
+    "youResponded": "Du hast geantwortet ♥",
+    "yourResponse": "Deine Antwort"
   },
   "calloutAdmin": {
     "deleted": "Callout gelöscht",
@@ -336,7 +405,26 @@
     "updated": "Änderungen gespeichert!"
   },
   "calloutBuilder": {
-    "showAdvancedOptions": "Erweiterte Optionen anzeigen"
+    "actions": {
+      "addSlide": "Slide hinzufügen",
+      "removeSlide": "Slide entfernen"
+    },
+    "internalTitle": "Interner Titel",
+    "nextButton": "Text für den Weiter-Button",
+    "nextSlide": {
+      "default": "-- Standard --",
+      "label": "Nächster Slide"
+    },
+    "prevButton": "Text für den Zurück-Button",
+    "showAdvancedOptions": "Erweiterte Optionen anzeigen",
+    "slideNo": "Slide {no}",
+    "submitButton": "Text für den Submit-Button",
+    "translationFields": {
+      "description": "Description",
+      "label": "Label",
+      "option": "Option {n}",
+      "placeholder": "Placeholder"
+    }
   },
   "calloutResponse": {
     "data": {
@@ -375,9 +463,12 @@
     "actions": {
       "assignTo": "Zuweisen",
       "moveBucket": "Antwort verschieben",
-      "toggleTag": "Tag hinzufügen / entfernen"
+      "toggleTag": "Tag hinzufügen / entfernen",
+      "viewOnMap": "Auf Karte anzeigen"
     },
     "editMode": "Vorsicht, du befindest dich im Bearbeitungsmodus!",
+    "manageFolders": "Ordner bearbeiten",
+    "manageReviewers": "Auswerter bearbeiten",
     "manageTags": "Tags bearbeiten",
     "notifications": {
       "addedAssignee": "\"{assignee}\" zugewiesen",
@@ -430,27 +521,23 @@
     }
   },
   "common": {
-    "annually": "Jährlich",
     "backToHome": "Zurück zur Startseite",
     "contributing": "Dein Beitrag",
+    "contributionPeriod": {
+      "annually": "Jährlich",
+      "monthly": "Monatlich"
+    },
     "contributionType": {
       "automatic": "Automatisch",
       "gift": "Geschenk",
       "manual": "Manuell",
       "none": "None"
     },
-    "copy": "Kopieren",
-    "every": "pro",
-    "goBack": "Zurück",
     "hello": "Hallo",
-    "in": "in",
     "itemsPerPage": "{items} Einträge pro Seite",
     "joined": "Mitglied seit",
     "loading": "Lädt...",
     "login": "Login",
-    "month": "Monat | Monaten",
-    "monthly": "Monatlich",
-    "new": "neu!",
     "newsletterStatus": {
       "cleaned": "Bereinigt",
       "none": "Kein Status",
@@ -463,17 +550,22 @@
     "pageCount": "Seite {pageNumber} von {pageTotal}",
     "paymentStatus": {
       "cancelled": "Gekündigt",
+      "draft": "Entwurf",
       "failed": "Fehlgeschlagen",
       "pending": "In Bearbeitung",
       "successful": "Erfolgreich"
     },
+    "perMonth": "/ Monat",
+    "perMonthText": "pro Monat",
+    "perYear": "/ Jahr",
+    "perYearText": "pro Jahr",
     "role": {
       "admin": "Admin",
       "member": "Mitglied",
       "superadmin": "Überadmin"
     },
+    "selectNone": "-- Keine --",
     "selectOne": "Auswählen",
-    "share": "Teilen",
     "show": "Anzeigen",
     "status": {
       "draft": "Entwurf",
@@ -485,8 +577,15 @@
     "timeAgo": "vor {time}",
     "timeIn": "in {time}",
     "until": "bis",
-    "year": "Jahr | Jahren",
     "yes": "Ja"
+  },
+  "contactAccount": {
+    "confirmDelete": {
+      "text": "Dadurch werden alle mit der Email-Adresse {email} verbundenen Daten gelöscht. Aktive Mitgliedschaften werden dadurch beendet.",
+      "title": "Kontakt löschen",
+      "warning": "Dieser Schritt kann nicht rückgängig gemacht werden. Sicher, dass du fortfahren möchtest?"
+    },
+    "contactDeleted": "Kontakt gelöscht."
   },
   "contactContribution": {
     "confirmCancel": {
@@ -509,14 +608,19 @@
     "cancellationDate": "Gekündigt am",
     "contribution": "Beitrag",
     "contributionType": "Zahlungsart",
-    "information": "Information",
+    "joinSurvey": "Anmelde-Fragebogen",
     "newsletter": "Newsletter",
     "overview": "Überblick",
     "pickTag": "Tag aus der Liste wählen",
+    "profile": "Profil",
     "roles": "Rolle",
     "security": {
       "instructions": "Link kopieren und teilen:",
       "loginOverride": "Automatischer Login",
+      "mfa": {
+        "desc": "Dieser Kontakt hat 2FA eingeschaltet. Klick auf \"{ disableLabel }\", um es auszuschalten.",
+        "disabledDesc": "Dieser Kontakt hat keine 2FA aktiviert."
+      },
       "resetPassword": "Passwort zurücksetzen",
       "title": "Sicherheit",
       "whatDoTheButtonsDo": "Auf den Button klicken, um Link zu erzeugen:"
@@ -579,7 +683,7 @@
     "cancelledContribution": "Deine Mitgliedschaft wurde gekündigt.",
     "changeBank": "Ändere deine Bankverbindung.",
     "changeBankInfo": "Im nächsten Schritt kannst du deine neue Bankverbindung eingeben.",
-    "contributing": "Du zahlst",
+    "contributing": "Sie zahlen",
     "contributionUpdateError": "Du kannst deinen Beitrag aktuell nicht ändern, weil eine Zahlung kurz bevorsteht.",
     "dueToRenew": "Deine Mitgliedschaft wird am {renewalDate} erneuert.",
     "expired": "Deine Mitgliedschaft ist ausgelaufen.",
@@ -594,8 +698,10 @@
     },
     "paymentMethod": "Zahlungsart",
     "paymentSourceUpdateError": "Du kannst deine Bankverbindung aktuell nicht ändern, weil eine Zahlung kurz bevorsteht.",
-    "prorateDecreaseMessage": "Dein Beitrag bleibt noch für {monthsLeft} {months} gleich. Der neue Beitrag wird am {renewalDate} zum ersten Mal eingezogen.",
-    "prorateIncreaseMessage": "Deine Mitgliedschaft mit dem oben angezeigten Beitrag läuft noch {monthsLeft} {months}. Du kannst aber eine Einmalzahlung in Höhe von {oneOffPayment} leisten um deine Mitgliedschaft sofort zu verlängern und den Beitrag zu erhöhen.",
+    "prorateDecreaseMessage": "Dein Beitrag bleibt noch für 1 Monat gleich. | Dein Beitrag bleibt noch für {n} Monaten gleich.",
+    "prorateDecreaseMessageWillStart": "Der neue Beitrag wird am {renewalDate} zum ersten Mal eingezogen.",
+    "prorateIncreaseMessage": "Deine Mitgliedschaft mit dem oben angezeigten Beitrag läuft noch 1 Monat. | Deine Mitgliedschaft mit dem oben angezeigten Beitrag läuft noch {n} Monaten.",
+    "prorateIncreaseMessageOneOff": "Du kannst aber eine Einmalzahlung in Höhe von {oneOffPayment} leisten um deine Mitgliedschaft sofort zu verlängern und den Beitrag zu erhöhen.",
     "prorateNoText": "Wählst Du diese Option, bleibt dein Beitrag bis zum neuen Abrechnungszeitrarum gleich.",
     "prorateNoTitle": "Ändern Sie meinen Beitrag ab dem {renewalDate}.",
     "prorateYesText": "Wählst Du diese Option, buchen wir eine Einmalzahlung in Höhe von {oneOffPayment} ab und deine Mitgliedschaft wird mit deinem neuen Beitrag sofort verlängert.",
@@ -616,12 +722,6 @@
     "lastSavedNow": "Zuletzt vor wenigen Augenblicken gespeichert.",
     "steps": {
       "content": {
-        "inputs": {
-          "intro": {
-            "help": "<p>Die <strong>Einleitung</strong> erscheint vor den Fragen. Erkläre darin, warum du den Callout machst, also was das Ziel ist und wie die Antworten helfen. Gib so viel Kontext wie möglich, um den Teilnehmenden die Beantwortung zu erleichtern.</p>\n",
-            "label": "Einleitung"
-          }
-        },
         "title": "Inhalt"
       },
       "dates": {
@@ -693,15 +793,23 @@
             }
           },
           "mapSchema": {
-            "addressPattern": {},
-            "addressPatternProp": {},
-            "addressProp": {},
+            "addressPattern": {
+              "label": "Welches Format möchtest du benutzen?"
+            },
+            "addressPatternProp": {
+              "label": "Soll ein Feld mit der Adresse gefüllt werden?",
+              "none": "-- Kein Feld mit der Adresse füllen --"
+            },
+            "addressProp": {
+              "label": "Welches Feld soll für die Darstellung der Antworten auf der Karte verwendet werden?"
+            },
             "bounds": {
               "label": "Maximale Kartengröße"
             },
             "center": {
               "label": "Karten-Zentrum"
             },
+            "geocodeCountries": {},
             "initialZoom": {
               "label": "Voreingestellter Zoom"
             },
@@ -714,7 +822,8 @@
             "style": {
               "help": "<p>Für die Kartenansicht benötigst du ein externes Kartentool, z. B. <a href=\"https://www.maptiler.com\" target=\"_blank\" rel=\"noopener noreferrer\">Maptiler</a> oder <a href=\"https://www.mapbox.com\" target=\"_blank\" rel=\"noopener noreferrer\">Mapbox</a>. Diese Tools stellen dir die URL für die Kartenansicht zur Verfügung, die du hier einfügen musst.</p>\n",
               "label": "Karten-URL"
-            }
+            },
+            "title": "Karteneinstellungen"
           },
           "multiple": {
             "help": "<p>Wenn ja, können eingeloggte Nutzer <strong>mehrfach</strong> am Callout teilnehmen.</p>\n",
@@ -724,17 +833,32 @@
               "yes": "Ja"
             }
           },
-          "responseImageFilter": {},
+          "requireCaptcha": {
+            "help": "<p>Wenn du den <strong>Bot-Spam-Schutz</strong> aktivierst, müssen die Teilnehmenden ein Captcha ausfüllen, um zu bestätigen, dass sie Menschen sind. Das verhindert Spamming von Bots.</p>\n",
+            "label": "Bot-Spam-Schutz für den Callout aktivieren?",
+            "opts": {
+              "all": "Ja, alle Teilnehmenden müssen bestätigen, dass sie Menschen sind.",
+              "guests": "Ja, Gastteilnehmer müssen bestätigen, dass sie Menschen sind.",
+              "none": "Nein"
+            }
+          },
+          "responseImageFilter": {
+            "label": "Möchtest du einen Filter auf die Bilder legen?"
+          },
           "responseImageProp": {
             "help": "<p>Das Bild wird verwendet, um die Antwort in der Karten- oder Galerieansicht zu visualisieren. Wichtig: Es muss sich um eine Datei-Upload-Komponente handeln.</p>\n",
             "label": "Welches Feld soll als Bild für Darstellung der Antwort dienen?"
+          },
+          "responseLinks": {
+            "label": "Links am Ende von Antworten hinzufügen?"
           },
           "responseTitleProp": {
             "help": "<p>Der Titel erscheint als Überschrift auf jeder Antwort in der Karten- oder Galerieansicht.</p>\n",
             "label": "Welches Feld soll als Überschrift dienen?"
           },
           "showResponses": {
-            "help": "<p>Mit dieser Funktion ist es möglich, Callout-Antworten auf einer Karte oder als Galerie darzustellen.</p>\n"
+            "help": "<p>Mit dieser Funktion ist es möglich, Callout-Antworten auf einer Karte oder als Galerie darzustellen.</p>\n",
+            "label": "Sollen Antworten öffentlich angezeigt werden?"
           },
           "visible": {
             "help": "<p>Du kannst den Callout <strong>nicht anzeigen</strong> lassen. Dann ist er nur über den Link erreichbar.</p>\n",
@@ -744,7 +868,9 @@
               "yes": "Ja, Callout im Dashboard anzeigen."
             }
           },
-          "whichResponseBuckets": {},
+          "whichResponseBuckets": {
+            "label": "Welche Antwortbereiche sollen öffentlich angezeigt werden?"
+          },
           "whichResponseViews": {
             "help": "<p>Hier kannst du entscheiden, ob du die Karten- oder die Galerieansicht verwenden möchtest. Es ist auch möglich beides auszuwählen.</p>\n",
             "label": "Wie soll die Antwort dargestellt werden?",
@@ -774,6 +900,10 @@
           "image": {
             "help": "<p>Das <strong>Titelbild</strong> dient zur Illustration des Callouts.</p>\n",
             "label": "Titelbild"
+          },
+          "intro": {
+            "help": "<p>Die <strong>Einleitung</strong> erscheint vor den Fragen. Erkläre darin, warum du den Callout machst, also was das Ziel ist und wie die Antworten helfen. Gib so viel Kontext wie möglich, um den Teilnehmenden die Beantwortung zu erleichtern.</p>\n",
+            "label": "Einleitung"
           },
           "overrideShare": {
             "label": "Callout-Titel und -Beschreibung zum Teilen verwenden?",
@@ -823,7 +953,6 @@
   },
   "footer": {
     "contactUs": "Kontaktiere uns unter",
-    "contacts": "Kontakte",
     "handbookResources": "Handbuch & Ressourcen",
     "impressum": "Impressum",
     "joinCommunity": "Mitglied werden",
@@ -832,10 +961,9 @@
     "terms": "Allgemeine Geschäftsbedingungen"
   },
   "forgotPassword": {
-    "checkInbox": "Bitte schaue in deinen Posteingang und befolge die Anleitung in der E-Mail. Sollte die E-mail nicht auftauchen, checke deinen Spamordner. ",
+    "backToLogin": "Zurück zum Login",
     "description": "Bitte gib deine E-Mail-Adresse ein. Wir schicken dir dann die Anleitung zum Zurücksetzen deines Passworts.",
-    "message": "Gibt es einen Account mit der E-mail-Adresse {email}, bekommst du in Kürze eine Nachricht.",
-    "resetPassword": "Passwort zurücksetzen",
+    "message": "Gibt es einen Account mit der E-mail-Adresse {email}, bekommst du in Kürze eine Nachricht. Bitte schaue in deinen Posteingang und befolge die Anleitung in der E-Mail. Sollte die E-mail nicht auftauchen, checke deinen Spamordner. ",
     "title": "Passwort vergessen?"
   },
   "form": {
@@ -847,7 +975,13 @@
     "description": "Bezeichnung",
     "email": "E-Mail",
     "errorMessages": {
-      "aggregatorTop": "Hier fehlt etwas! Bitte ergänzen.",
+      "api": {
+        "account-locked": "Konto wegen zu vieler fehlgeschlagener Anmeldeversuche gesperrt. Bitte Passwort zurücksetzen oder an den Support wenden, um Hilfe zu erhalten.",
+        "duplicate-email": "Diese E-Mail-Adresse existiert bereits.",
+        "invalid-token": "Dein eingegebener 2FA Token stimmt nicht.",
+        "login-failed": "Falsche Kombination von Passwort und E-Mail.",
+        "mfa-token-required": "Bitte gebe den Code deiner Authentifizierungs-App ein."
+      },
       "generic": "Upps! Etwas ist schiefgelaufen. Bitte wende dich an den Support, sollte das erneut passieren.",
       "validation": "Es fehlt etwas! Bitte kontrolliere die obigen Felder."
     },
@@ -905,6 +1039,11 @@
       "url": {
         "required": "URL benötigt",
         "url": "Ungültige URL"
+      },
+      "verifyCode": {
+        "max": "Dein Code darf höchstens {max} Zeichen lang sein.",
+        "min": "Dein Code muss mindestens {min} Zeichen haben.",
+        "required": "Code benötigt"
       }
     },
     "firstName": "Vorname",
@@ -929,25 +1068,26 @@
     "saveChanges": "Änderungen speichern",
     "saved": "Gespeichert!",
     "unsavedChanges": "Ungespeicherte Änderungen",
-    "updated": "Aktualisiert",
-    "warning": "Ändere hier nur etwas, wenn du das Einverständnis hast. Änderungen werden auch den Nutzern angezeigt."
+    "updated": "Aktualisiert"
   },
   "formRenderer": {
     "components": {
       "file": {
         "browse": "Upload vom Gerät",
-        "dropFiles": "Files hierher ziehen,",
+        "dropFiles": "Dateien hierher ziehen",
         "or": "oder",
         "switchToFileUpload": "Zum Upload wechseln",
         "takePicture": "Foto aufnehmen",
         "useCamera": "Kamera benutzen"
+      },
+      "multiple": {
+        "addAnother": "Neue hinzufügen"
       }
     }
   },
   "homePage": {
     "editProfile": "Profil bearbeiten",
     "manageContribution": "Beitrag ändern",
-    "manageYourContribution": "Beitrag ändern",
     "newCallout": "Neuer Callout!",
     "openCallouts": "Aktuelle Callouts",
     "quickActions": "Schnellaktionen",
@@ -959,26 +1099,20 @@
   },
   "item": {
     "status": {
-      "endedOn": "am {date}",
       "endsIn": "Endet in {duration}",
-      "startsIn": "startet in {duration}"
+      "startsIn": "Startet in {duration}"
     }
   },
   "join": {
     "absorbFeeForce": "Bei einem Beitrag von {amount}, musst du die {fee} Transaktionskosten übernehmen.",
     "absorbFeeOptIn": "Ja, ich übernehme die {fee} Transaktionskosten.",
     "absorbFeeText": "Unser Zahlungsdienstleister stellt uns jede Transaktion in Rechnung. Das heißt, wir erhalten weniger von deinem monatlichen Beitrag. Möchtest du die Kosten dafür übernehmen? Alternativ kannst du auch jährlich bezahlen.",
-    "contribute": "Mit {amount} pro {period} unterstützen.",
-    "contribution": "Beitrag",
+    "contribute": "Mit {contribution} unterstützen.",
     "errors": {
       "confirmEmail": {
         "message": "Fast geschafft! Wir müssen nur noch deine E-Mail-Adresse bestätigen, um fortzufahren.",
         "proceed": "Wir haben dir eine E-Mail geschickt. Bitte klicke auf den Bestätigungslink, um fortzufahren.",
         "title": "E-Mail-Adresse bestätigen"
-      },
-      "duplicateEmail": {
-        "message": "Diese E-Mail-Adresse ist bereits registriert. Bitte logge dich ein, um fortzufahren.",
-        "title": "E-Mail-Adresse wiederholen"
       },
       "failed": {
         "backToJoin": "Zurück zur Registrierung",
@@ -986,7 +1120,7 @@
         "title": "Etwas ist schief gelaufen"
       }
     },
-    "login": "Log in",
+    "login": "Anmelden",
     "memberAccount": "Mitglieder-Account",
     "memberAlready": "Bist du bereits Mitglied?",
     "minimumContribution": "Der minimale Beitrag ist",
@@ -995,34 +1129,48 @@
     "now": "Jetzt Mitglied werden! ",
     "paymentMethod": "Zahlungsart",
     "poweredBy": "Powered by beabee",
-    "privacy": "Datenschutzerklärung"
+    "privacy": "Datenschutzerklärung",
+    "tax": {
+      "included": "Beitrag inklusive {taxRate}% MwSt."
+    }
   },
   "joinPayment": {
     "genericError": "Upps! Etwas ist schiefgelaufen. Bitte wende dich an den Support, sollte das erneut passieren.",
     "goBack": "Möchtest du etwas ändern? {back}",
     "goBackButton": "Zurück zum letzten Schritt",
     "note": "Du kannst deine Zahlungsdaten jederzeit in deinem Nutzer-Account ändern und dort auch sehen, wie viel du in der Vergangenheit bereits gezahlt hast. ",
-    "willBeContributing": "Du zahlst {amount}/{period}"
+    "willBeContributing": "Du zahlst {contribution}"
   },
   "joinSetup": {
     "confirmDetails": "Bitte bestätige deine Angaben:",
     "continue": "Weiter",
     "welcome": "Willkommen {firstName}!"
   },
-  "locale": "de",
   "login": {
     "backTo": "Zurück zu {newsroomName}",
     "forgotPassword": "Passwort vergessen?",
     "joinNow": "Jetzt Mitglied werden!",
-    "login": "Login",
+    "lostMfaDevice": "2FA-Gerät verloren?",
     "notMember": "Noch kein Mitglied?",
-    "title": "Einloggen",
-    "wrongCredentials": "Falsche Kombination von Passwort und E-Mail."
+    "title": "Einloggen"
+  },
+  "lostDevice": {
+    "description": "Bitte gib deine E-Mail-Adresse ein, und wir senden dir Anweisungen, wie du dein 2FA zurücksetzen kannst.",
+    "message": "Gibt es einen Account mit der E-mail-Adresse {email}, bekommst du in Kürze eine Nachricht. Bitte schaue in deinen Posteingang und befolge die Anleitung in der E-Mail. Sollte die E-mail nicht auftauchen, checke deinen Spamordner. ",
+    "title": "Du hast dein 2FA-Gerät verloren?"
   },
   "membershipBuilder": {
     "steps": {
       "accountConfirmation": {
         "description": "Stelle ein, welche persönlichen Informationen Du über deine Mitglieder sammeln willst.",
+        "joinSurvey": {
+          "required": "Die Mitglieder müssen den Fragebogen ausfüllen, ehe sie fortfahren können.",
+          "slug": "Callout",
+          "slugHelp": "Du kannst jeden Callout verwenden, der Enddatum hat.",
+          "text": "Als Teil des Anmeldeprozesses kannst du deine Mitglieder einen kurzen Fragebogen ausfüllen lassen. Du kannst zum Beispiel zusätzliche Informationen abfragen oder in Erfahrung bringen, warum sie Mitglied geworden sind.",
+          "textIntro": "Erkläre deinen Mitgliedern kurz, warum du weitere Informationen von ihnen haben möchtest.",
+          "title": "Anmelde-Fragebogen"
+        },
         "optInLabel": "Beschriftung Kontrollkästchen ",
         "optInText": "Text",
         "optInTitle": "Überschrift",
@@ -1054,7 +1202,8 @@
         "formSubtitle": "Untertitel",
         "formTitle": "Titel",
         "minAmount": "Mindestbeitrag",
-        "showAbsorbFee": "Um Übernahme der Transaktionskosten bitten",
+        "showAbsorbFee": "Nutzer um Ausgleich der Gebühren bitten",
+        "showNoContribution": "Registrierung ohne Zahlung erlauben",
         "suggestedAmounts": "Beiträge vorschlagen",
         "text": "In diesem Abschnitt kannst du dein Registrierungsformular bearbeiten, optimieren und ansehen.",
         "title": "Registrierung"
@@ -1067,7 +1216,6 @@
     "admin": "Administration",
     "adminSettings": "Einstellungen",
     "callouts": "Callouts",
-    "community": "Community",
     "contacts": "Kontakte",
     "contribution": "Beitrag",
     "dashboard": "Dashboard",
@@ -1114,8 +1262,11 @@
     "forgotPassword": "Passwort vergessen",
     "join": "Mitglied werden",
     "login": "Login",
+    "lostDevice": "Du hast dein 2FA-Gerät verloren?",
     "notFound": "Seite nicht gefunden",
+    "resetDevice": "Zweitgerät zurücksetzen",
     "resetPassword": "Passwort zurücksetzen",
+    "setPassword": "Passwort vergeben",
     "setup": "Account fertigstellen"
   },
   "paymentMethods": {
@@ -1133,6 +1284,11 @@
       "changeLabel": "Kreditkartendetails ändern",
       "label": "Kreditkarte",
       "setLabel": "Deine Kreditkartendetails"
+    },
+    "s_paypal": {
+      "changeLabel": "PayPal ändern",
+      "label": "PayPal",
+      "setLabel": "Deine PayPal-Daten"
     },
     "s_sepa": {
       "changeLabel": "Lastschrift ändern",
@@ -1161,15 +1317,18 @@
     },
     "showingOf": "Zahlungen {start} bis {end} von {total}"
   },
+  "resetDevice": {
+    "description": "Gib deinPasswort ein, um den 2FA-Schutz zurückzusetzen. Sobald du eingeloggt bist, kannst du ein neues Gerät einrichten.",
+    "failed": "Das Zurücksetzen des Geräts war nicht erfolgreich, möglicherweise ist die Verbindung abgelaufen.",
+    "invalidPassword": "Ungültiges Passwort",
+    "success": "Das Zurücksetzen des 2FA-Geräts hat geklappt.",
+    "title": "2FA-Gerät zurücksetzen?"
+  },
   "resetPassword": {
-    "changePassword": "Passwort ändern",
-    "confirmPassword": "Passwort bestätigen",
     "description": "Neues Passwort eingeben, um fortzufahren.",
-    "errorLink": "einen neuen Link anfordern",
-    "errorText": "Der Link scheint abgelaufen zu sein. Du kannst {newLink}.",
-    "errorTitle": "Das Zurücksetzen des Passworts ist schiefgelaufen.",
+    "failed": "Das Zurücksetzen des Passworts ist schiefgelaufen.",
     "login": "Einloggen",
-    "newPassword": "Neues Passwort",
+    "lostDevice": "2FA-Gerät verloren? Bitte an den Support wenden.",
     "success": "Dein Passwort wurde aktualisiert.",
     "title": "Passwort aktualisieren?"
   },
@@ -1210,5 +1369,8 @@
       "title": "Tag entfernen"
     },
     "name": "Name"
+  },
+  "taxRate": {
+    "invoiceName": "MwSt"
   }
 }

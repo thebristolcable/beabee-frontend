@@ -22,8 +22,8 @@
       name="period"
       :label="t('contacts.data.period')"
       :options="[
-        ['monthly', t('common.monthly')],
-        ['annually', t('common.annually')],
+        ['monthly', t('common.contributionPeriod.monthly')],
+        ['annually', t('common.contributionPeriod.annually')],
       ]"
       class="mb-4"
     />
@@ -53,8 +53,8 @@ import AppSelect from '../forms/AppSelect.vue';
 import AppRadioGroup from '../forms/AppRadioGroup.vue';
 import { fetchContent } from '../../utils/api/content';
 import { generalContent } from '../../store';
-import { UpdateContribution } from './contact.interface';
-import { SelectItem } from '../forms/form.interface';
+import { type UpdateContribution } from './contact.interface';
+import { type SelectItem } from '../forms/form.interface';
 
 const { t } = useI18n();
 

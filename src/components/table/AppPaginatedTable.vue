@@ -1,14 +1,14 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div>
-    <div class="mb-2 flex gap-4">
+    <div class="mb-2 flex items-end gap-4">
       <slot name="actions"></slot>
       <AppPaginatedTableResult
         v-model:page="query.page"
         v-model:limit="query.limit"
         :keypath="keypath"
         :result="result"
-        class="ml-auto"
+        class="ml-auto items-end"
         no-limit
       />
     </div>
@@ -17,10 +17,11 @@
       :headers="headers"
       :items="result?.items || null"
       :selectable="selectable"
+      :row-class="rowClass"
       class="mb-4 w-full"
     >
-      <template v-for="(_, name) in $slots" #[name]="slotData">
-        <slot :name="name" v-bind="slotData" />
+      <template v-for="name of slotNames" #[name]="slotData" :key="name">
+        <slot :name="name" v-bind="slotData || {}"></slot>
       </template>
     </AppTable>
     <AppPaginatedTableResult
@@ -28,20 +29,22 @@
       v-model:limit="query.limit"
       :keypath="keypath"
       :result="result"
+      class="items-center"
     />
   </div>
 </template>
 
-<script lang="ts" setup>
-import { Paginated } from '@beabee/beabee-common';
+<script lang="ts" setup generic="I extends Item">
+import { type Paginated } from '@beabee/beabee-common';
 import AppPaginatedTableResult from './AppPaginatedTableResult.vue';
 import AppTable from './AppTable.vue';
-import { Header, SortType } from './table.interface';
+import { type Header, type Item, SortType } from './table.interface';
+import { computed, useSlots } from 'vue';
 
 defineProps<{
   headers: Header[];
   keypath: string;
-  result: Paginated<unknown> | undefined;
+  result: Paginated<I> | undefined;
   query: {
     page: number;
     limit: number;
@@ -51,5 +54,13 @@ defineProps<{
     };
   };
   selectable?: boolean;
+  rowClass?: (item: I) => string;
 }>();
+
+// Slots are passed to AppTable, typing is currently lost
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const slotNames = computed<any[]>(() => {
+  const slots = useSlots();
+  return Object.keys(slots);
+});
 </script>

@@ -7,7 +7,7 @@ function shades(color, levels = []) {
   );
 }
 
-module.exports = {
+export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   safelist: ['bg-success', 'bg-warning', 'bg-danger'],
   theme: {
@@ -37,12 +37,12 @@ module.exports = {
         DEFAULT: '3px',
       },
       lineHeight: {
-        tight: '1.3',
         5.5: '1.375rem',
       },
       screens: {
         xs: '475px',
-        xl: '1400px',
+        lg: '1264px' /* Offset by 240px for menu */,
+        xl: '1640px',
       },
       padding: {
         4.5: '1.125rem',
@@ -59,7 +59,8 @@ module.exports = {
         'auth-box': '0 0 1rem 0.125rem rgba(51, 51, 51, 0.4)',
       },
       fontSize: {
-        '2.5xl': '1.75rem',
+        '1.8xl': '1.375rem',
+        '2.2xl': '1.625rem',
         '3.5xl': '2rem',
       },
       transitionProperty: {

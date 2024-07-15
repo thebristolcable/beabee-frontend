@@ -6,15 +6,17 @@
 .formio-dialog .preview-panel {
   @apply text-lg;
 
-  /* Give callouts a white background */
-  &:not(.has-no-bg) .formio-form {
-    @apply bg-white p-6 shadow-md;
-  }
-
   /* Form labels same styling as .content-message h3 */
   .col-form-label {
-    @apply font-title text-xl font-semibold mb-2;
+    @apply mb-2 font-title text-xl font-semibold;
   }
+}
+
+/* Apply to form renderer */
+.callout-form.has-bg,
+/* Apply to form builder form area */
+.callout-form-builder .formarea {
+  @apply bg-white p-6 shadow-md;
 }
 
 /* Apply to form renderer */
@@ -34,7 +36,7 @@
 
   /* Grid styles */
   .row {
-    @apply flex gap-0 -mx-2;
+    @apply -mx-2 flex gap-0;
     & > [class*='col'] {
       @apply px-2;
     }
@@ -43,25 +45,25 @@
     @apply flex-1;
   }
   .col-sm-2 {
-    @apply flex-none basis-1/6 max-w-[16.666667%];
+    @apply max-w-[16.666667%] flex-none basis-1/6;
   }
   .col-sm-6 {
-    @apply flex-none basis-1/2 max-w-[50%];
+    @apply max-w-[50%] flex-none basis-1/2;
   }
   .col-sm-10 {
-    @apply flex-none basis-5/6 max-w-[83.333333%];
+    @apply max-w-[83.333333%] flex-none basis-5/6;
   }
   .col-sm-12 {
-    @apply flex-none basis-full max-w-full;
+    @apply max-w-full flex-none basis-full;
   }
   .col-md-1 {
-    @apply flex-none basis-1/12 max-w-[8.333333%];
+    @apply max-w-[8.333333%] flex-none basis-1/12;
   }
   .col-md-2 {
-    @apply flex-none basis-2/12 max-w-[16.666667%];
+    @apply max-w-[16.666667%] flex-none basis-2/12;
   }
   .col-md-9 {
-    @apply flex-none basis-9/12 max-w-[75%];
+    @apply max-w-[75%] flex-none basis-9/12;
   }
 
   /* Button styling */
@@ -77,23 +79,14 @@
     }
 
     &.btn-success {
-      @apply bg-success;
-      &:not([disabled]):hover {
-        @apply bg-success-110;
-      }
+      @apply bg-success enabled:hover:bg-success-110;
     }
     &.btn-danger {
-      @apply bg-danger;
-      &:not([disabled]):hover {
-        @apply bg-danger-110;
-      }
+      @apply bg-danger enabled:hover:bg-danger-110;
     }
     &.btn-light,
     &.btn-secondary {
-      @apply border border-link bg-white text-link;
-      &:not([disabled]):hover {
-        @apply bg-danger-10;
-      }
+      @apply border border-link bg-white text-link enabled:hover:bg-link-10;
     }
 
     &.btn-block {
@@ -103,6 +96,14 @@
     /* Align font-awesome icons */
     &.svg-inline--fa {
       @apply box-content align-top;
+    }
+
+    /* Force stylign on add another button */
+    &.btn.formio-button-add-another {
+      @apply border border-link bg-white text-link enabled:hover:bg-link-10;
+      & > i {
+        @apply mr-2;
+      }
     }
   }
 
@@ -150,7 +151,7 @@
   .form-check {
     @apply flex items-baseline;
     & > i {
-      @apply flex-none ml-2;
+      @apply ml-2 flex-none;
     }
   }
 
@@ -183,6 +184,10 @@
     @apply flex-1;
   }
 
+  .formio-component-datagrid {
+    @apply overflow-visible;
+  }
+
   /* Styling for input errors */
   .formio-errors {
     @apply mt-1.5 text-sm font-semibold;
@@ -205,7 +210,7 @@
       @apply flex flex-wrap gap-2;
 
       & > div {
-        @apply flex-1 min-w-[120px];
+        @apply min-w-[120px] flex-1;
         & > span {
           @apply flex items-start;
         }
@@ -216,7 +221,7 @@
       }
 
       i[ref='removeLink'] {
-        @apply align-top ml-1;
+        @apply ml-1 align-top;
       }
     }
 
@@ -229,13 +234,13 @@
     }
 
     .list-group {
-      @apply border border-primary-20 rounded;
+      @apply rounded border border-primary-20;
     }
     .list-group-header {
-      @apply p-2 bg-primary-10 rounded-t;
+      @apply rounded-t bg-primary-10 p-2;
     }
     .list-group-item {
-      @apply p-2 border-b border-primary-20;
+      @apply border-b border-primary-20 p-2;
       &:last-child {
         @apply border-b-0;
       }
@@ -246,10 +251,10 @@
     }
     .file {
       .col-form-label {
-        @apply text-lg mb-0;
+        @apply mb-0 text-lg;
       }
       .alert-danger {
-        @apply text-danger text-sm font-semibold;
+        @apply text-sm font-semibold text-danger;
       }
     }
   }
@@ -274,5 +279,57 @@
   /* Respect text formatting */
   div[ref='value'] {
     @apply whitespace-pre-wrap break-words;
+  }
+
+  a {
+    @apply underline;
+  }
+}
+
+/* Apply to form renderer in small mode */
+.callout-form.is-small .callout-form-renderer {
+  @apply text-base;
+
+  .form-group {
+    @apply mb-4;
+  }
+
+  .col-form-label {
+    @apply font-body text-base;
+  }
+}
+
+/* Apply to form renderer in simple mode */
+.callout-form.is-simple .callout-form-renderer {
+  @apply text-base;
+
+  .formio-form {
+    @apply min-h-0;
+  }
+
+  .form-group {
+    @apply mb-1 block border-t border-t-grey pt-2 leading-tight first:border-0;
+  }
+
+  /* Hide file components, this should really be configurable */
+  .formio-component-file {
+    @apply hidden;
+  }
+
+  .col-form-label {
+    @apply mb-0 text-base font-bold;
+    &::after {
+      @apply hidden;
+    }
+  }
+
+  /* Hide the component description */
+  .form-text[id^='d-'] {
+    @apply hidden;
+  }
+
+  div[ref='element'],
+  div[ref='value'] {
+    @apply inline;
   }
 }

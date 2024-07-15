@@ -1,10 +1,26 @@
-import { CalloutFormSchema } from '@beabee/beabee-common';
+import { type CalloutComponentSchema } from '@beabee/beabee-common';
+import type { LocaleProp } from '@type';
 
 export interface FormBuilderRef {
-  form: CalloutFormSchema;
+  builder: { form: { components: CalloutComponentSchema[] } };
+}
+
+export interface FormBuilderNavigation {
+  prevText: LocaleProp;
+  nextText: LocaleProp;
+  nextSlideId: string;
+  submitText: LocaleProp;
+}
+
+export interface FormBuilderSlide {
+  id: string;
+  title: string;
+  components: CalloutComponentSchema[];
+  navigation: FormBuilderNavigation;
 }
 
 export const formOpts = {
+  noDefaultSubmitButton: true,
   builder: {
     basic: false,
     advanced: false,

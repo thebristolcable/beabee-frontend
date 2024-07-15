@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ContributionPeriod,
-  Paginated,
+  type Paginated,
   PaymentMethod,
-  RoleType,
+  type RoleType,
 } from '@beabee/beabee-common';
 
-import axios from '../../lib/axios';
-import {
+import { deserializeDate, instance } from '.';
+import env from '../../env';
+
+import type {
   ContributionInfo,
   CreateContactData,
   ForceUpdateContributionData,
@@ -24,10 +26,7 @@ import {
   StartContributionData,
   UpdateContactData,
   UpdateContactRoleData,
-} from './api.interface';
-
-import { deserializeDate } from '.';
-import env from '../../env';
+} from '@type';
 
 // TODO: how to make this type safe?
 export function deserializeContact(data: any): any {
@@ -69,7 +68,7 @@ export async function fetchContacts<With extends GetContactWith = void>(
   _with?: readonly With[]
 ): Promise<Paginated<GetContactDataWith<With>>> {
   // TODO: fix type safety
-  const { data } = await axios.get('/contact', {
+  const { data } = await instance.get('/contact', {
     params: { with: _with, ...query },
   });
   return {
@@ -81,7 +80,10 @@ export async function fetchContacts<With extends GetContactWith = void>(
 export async function createContact(
   dataIn: CreateContactData
 ): Promise<GetContactData> {
-  const { data } = await axios.post<Serial<GetContactData>>('/contact', dataIn);
+  const { data } = await instance.post<Serial<GetContactData>>(
+    '/contact',
+    dataIn
+  );
   return deserializeContact(data);
 }
 
@@ -89,7 +91,7 @@ export async function fetchContact<With extends GetContactWith = void>(
   id: string,
   _with?: readonly With[]
 ): Promise<GetContactDataWith<With>> {
-  const { data } = await axios.get<Serial<GetContactDataWith<With>>>(
+  const { data } = await instance.get<Serial<GetContactDataWith<With>>>(
     `/contact/${id}`,
     {
       params: { with: _with },
@@ -102,7 +104,7 @@ export async function updateContact(
   id: string,
   dataIn: UpdateContactData
 ): Promise<GetContactData> {
-  const { data } = await axios.patch<Serial<GetContactData>>(
+  const { data } = await instance.patch<Serial<GetContactData>>(
     `/contact/${id}`,
     // TODO: passing dataIn directly is not type safe, it could contain extra properties
     dataIn
@@ -110,8 +112,12 @@ export async function updateContact(
   return deserializeContact(data);
 }
 
+export async function deleteContact(id: string): Promise<void> {
+  await instance.delete(`/contact/${id}`);
+}
+
 export async function fetchContribution(): Promise<ContributionInfo> {
-  const { data } = await axios.get<Serial<ContributionInfo>>(
+  const { data } = await instance.get<Serial<ContributionInfo>>(
     '/contact/me/contribution'
   );
   return deserializeContribution(data);
@@ -120,7 +126,7 @@ export async function fetchContribution(): Promise<ContributionInfo> {
 export async function updateContribution(
   dataIn: SetContributionData
 ): Promise<ContributionInfo> {
-  const { data } = await axios.patch<Serial<ContributionInfo>>(
+  const { data } = await instance.patch<Serial<ContributionInfo>>(
     '/contact/me/contribution',
     {
       amount: dataIn.amount,
@@ -136,7 +142,7 @@ export async function forceUpdateContribution(
   id: string,
   dataIn: ForceUpdateContributionData
 ): Promise<ContributionInfo> {
-  const { data } = await axios.patch<Serial<ContributionInfo>>(
+  const { data } = await instance.patch<Serial<ContributionInfo>>(
     `/contact/${id}/contribution/force`,
     {
       type: dataIn.type,
@@ -155,7 +161,7 @@ export const startContributionCompleteUrl =
 export async function startContribution(
   dataIn: StartContributionData
 ): Promise<PaymentFlowParams> {
-  const { data } = await axios.post<Serial<PaymentFlowParams>>(
+  const { data } = await instance.post<Serial<PaymentFlowParams>>(
     '/contact/me/contribution',
     {
       amount: dataIn.amount,
@@ -172,14 +178,14 @@ export async function startContribution(
 export async function completeStartContribution(
   paymentFlowId: string
 ): Promise<ContributionInfo> {
-  const { data } = await axios.post<Serial<ContributionInfo>>(
+  const { data } = await instance.post<Serial<ContributionInfo>>(
     '/contact/me/contribution/complete',
     { paymentFlowId }
   );
   return deserializeContribution(data);
 }
 export async function cancelContribution(id: string): Promise<void> {
-  await axios.post(`/contact/${id}/contribution/cancel`);
+  await instance.post(`/contact/${id}/contribution/cancel`);
 }
 
 export const updatePaymentMethodCompleteUrl =
@@ -188,7 +194,7 @@ export const updatePaymentMethodCompleteUrl =
 export async function updatePaymentMethod(
   paymentMethod?: PaymentMethod
 ): Promise<PaymentFlowParams> {
-  const { data } = await axios.put<Serial<PaymentFlowParams>>(
+  const { data } = await instance.put<Serial<PaymentFlowParams>>(
     '/contact/me/payment-method',
     { paymentMethod, completeUrl: updatePaymentMethodCompleteUrl }
   );
@@ -198,7 +204,7 @@ export async function updatePaymentMethod(
 export async function completeUpdatePaymentMethod(
   paymentFlowId: string
 ): Promise<ContributionInfo> {
-  const { data } = await axios.post<Serial<ContributionInfo>>(
+  const { data } = await instance.post<Serial<ContributionInfo>>(
     '/contact/me/payment-method/complete',
     { paymentFlowId }
   );
@@ -209,7 +215,7 @@ export async function fetchPayments(
   id: string,
   query: GetPaymentsQuery
 ): Promise<Paginated<GetPaymentData>> {
-  const { data } = await axios.get<Paginated<Serial<GetPaymentData>>>(
+  const { data } = await instance.get<Paginated<Serial<GetPaymentData>>>(
     `/contact/${id}/payment`,
     { params: query }
   );
@@ -228,7 +234,7 @@ export async function updateRole(
   role: RoleType,
   dataIn: UpdateContactRoleData
 ): Promise<ContactRoleData> {
-  const { data } = await axios.put<Serial<ContactRoleData>>(
+  const { data } = await instance.put<Serial<ContactRoleData>>(
     `/contact/${id}/role/${role}`,
     {
       dateAdded: dataIn.dateAdded,
@@ -239,5 +245,5 @@ export async function updateRole(
 }
 
 export async function deleteRole(id: string, role: RoleType): Promise<void> {
-  await axios.delete(`/contact/${id}/role/${role}`);
+  await instance.delete(`/contact/${id}/role/${role}`);
 }
