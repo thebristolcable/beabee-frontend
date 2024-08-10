@@ -1,10 +1,16 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <ContributionPeriod_
+  <AppChoice
     v-if="showPeriod"
     v-model="periodProxy"
+    :items="
+      content.periods.map((period) => ({
+        label: t('common.contributionPeriod.' + period.name),
+        value: period.name,
+      }))
+    "
+    :disabled="disabled"
     class="mb-4"
-    :periods="content.periods"
   />
 
   <ContributionAmount
@@ -12,17 +18,18 @@
     :is-monthly="isMonthly"
     :min-amount="minAmount"
     :defined-amounts="definedAmounts"
-    class="mb-8"
+    :disabled="disabled"
+    class="mb-4"
   />
 
-  <!-- TODO: Needed for join form, can we rework UI? -->
   <slot></slot>
 
   <ContributionMethod
     v-if="showPaymentMethod"
     v-model="paymentMethodProxy"
     :methods="content.paymentMethods"
-    class="mb-3"
+    :disabled="disabled"
+    class="mb-4"
   />
 
   <ContributionFee
@@ -31,6 +38,7 @@
     :amount="amountProxy"
     :fee="fee"
     :force="shouldForceFee"
+    :disabled="disabled"
   />
 </template>
 
@@ -41,11 +49,13 @@ import {
   PaymentMethod,
 } from '@beabee/beabee-common';
 import { computed, watch } from 'vue';
-import ContributionPeriod_ from './ContributionPeriod.vue';
 import ContributionAmount from './ContributionAmount.vue';
 import ContributionFee from './ContributionFee.vue';
 import ContributionMethod from './ContributionMethod.vue';
-import { ContributionContent } from './contribution.interface';
+import { type ContributionContent } from './contribution.interface';
+import { useI18n } from 'vue-i18n';
+import AppChoice from '../forms/AppChoice.vue';
+import type { ContentPaymentData } from '@type/content-payment-data';
 
 const props = withDefaults(
   defineProps<{
@@ -54,13 +64,19 @@ const props = withDefaults(
     payFee: boolean;
     paymentMethod: PaymentMethod;
     content: ContributionContent;
+    paymentContent: ContentPaymentData;
     showPeriod?: boolean;
     showPaymentMethod?: boolean;
+    disabled?: boolean;
   }>(),
-  { showPeriod: true, showPaymentMethod: true }
+  { showPeriod: true, showPaymentMethod: true, disabled: false }
 );
 
-const fee = computed(() => calcPaymentFee(props, props.content.stripeCountry));
+const { t } = useI18n();
+
+const fee = computed(() =>
+  calcPaymentFee(props, props.paymentContent.stripeCountry)
+);
 
 const emit = defineEmits([
   'update:amount',

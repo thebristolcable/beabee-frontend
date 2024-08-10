@@ -10,7 +10,7 @@ meta:
     <PageTitle
       :title="
         status
-          ? t('editCallout.title', { title: steps.titleAndImage.title })
+          ? t('editCallout.title', { title: steps.titleAndImage.title.default })
           : t('createCallout.title')
       "
       border
@@ -51,7 +51,7 @@ import {
   fetchCallout,
   updateCallout,
 } from '../../../utils/api/callout';
-import { CalloutStepsProps } from '../../../components/pages/admin/callouts/callouts.interface';
+import type { CalloutStepsProps } from '../../../components/pages/admin/callouts/callouts.interface';
 import CalloutStepper from '../../../components/pages/admin/callouts/CalloutStepper.vue';
 import {
   convertCalloutToSteps,
@@ -82,7 +82,7 @@ addBreadcrumb(
           ...(props.id
             ? [
                 {
-                  title: steps.value.titleAndImage.title,
+                  title: steps.value.titleAndImage.title.default,
                   to: '/admin/callouts/view/' + props.id,
                 },
                 {
@@ -134,29 +134,28 @@ const updateAction = computed(() =>
   isUpdateAction.value
     ? t('actions.update')
     : canStartNow.value
-    ? t('actions.publish')
-    : t('actions.schedule')
+      ? t('actions.publish')
+      : t('actions.schedule')
 );
 
 async function saveCallout(asDraft = false) {
-  // TODO: Remove non-null assertion, handlers can't get called if steps is undefined
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const data = convertStepsToCallout(steps.value!);
+  // Handler can't be called if steps aren't set
+  if (!steps.value) throw new Error('Steps are not set');
 
-  const dataWithDefaults = {
-    ...data,
-    // Title and slug might not be set for new callouts
-    title: data.title || t('createCallout.untitledCallout'),
-    slug: data.slug || null,
-    ...(asDraft && {
-      starts: null,
-      expires: null,
-    }),
-  };
+  const data = convertStepsToCallout(steps.value);
+
+  if (!data.variants.default.title) {
+    data.variants.default.title = t('createCallout.untitledCallout');
+  }
+
+  if (asDraft) {
+    data.starts = null;
+    data.expires = null;
+  }
 
   const callout = props.id
-    ? await updateCallout(props.id, dataWithDefaults)
-    : await createCallout(dataWithDefaults);
+    ? await updateCallout(props.id, data)
+    : await createCallout(data);
 
   lastSaved.value = new Date();
   return callout;
@@ -190,7 +189,6 @@ async function handleSaveDraft() {
 
 async function handlePreview() {
   // Browsers require window.open to be called synchronously
-  // https://www.abeautifulsite.net/posts/opening-a-new-window-after-an-async-operation/
   const previewWindow = window.open('about:blank', 'preview');
   const callout = await saveCallout(status.value === ItemStatus.Draft);
 
@@ -201,23 +199,10 @@ async function handlePreview() {
 
 async function reset() {
   const callout = props.id
-    ? await fetchCallout(props.id, ['form', 'responseViewSchema'])
+    ? await fetchCallout(props.id, ['form', 'responseViewSchema', 'variants'])
     : undefined;
   steps.value = convertCalloutToSteps(callout);
   status.value = callout?.status;
-
-  if (!steps.value.content.formSchema.components.length) {
-    steps.value.content.formSchema.components.push({
-      type: 'button',
-      label: t('actions.submit'),
-      key: 'submit',
-      size: 'md',
-      block: false,
-      action: 'submit',
-      disableOnInvalid: true,
-      theme: 'primary',
-    });
-  }
 }
 
 let interval: number | undefined;

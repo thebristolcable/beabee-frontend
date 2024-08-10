@@ -7,79 +7,81 @@ meta:
 
 <template>
   <PageTitle :title="t('addContact.title')" border></PageTitle>
-  <div class="grid lg:grid-cols-2">
-    <AppForm
-      :button-text="t('actions.save')"
-      :success-text="t('addContact.contactSaved')"
-      :error-text="{
-        'duplicate-email': t('addContact.errors.duplicateEmail'),
-      }"
-      @submit.prevent="handleSubmit"
-    >
-      <section class="mb-8">
-        <ContactBasicFields
-          v-model:email="data.email"
-          v-model:first-name="data.firstname"
-          v-model:last-name="data.lastname"
-          optional-names
-        />
-        <AppCheckbox
-          v-model="data.subscribeToNewsletter"
-          :label="t('addContact.subscribeToNewsletter')"
-          class="mb-4"
-        />
-      </section>
-      <section class="mb-8">
-        <AppHeading class="mb-4">{{ t('contactOverview.roles') }}</AppHeading>
-        <RoleEditor
-          :roles="data.roles"
-          @delete="handleDeleteRole"
-          @update="handleUpdateRole"
-        />
-      </section>
-      <section class="mb-8">
-        <AppHeading class="mb-4">
-          {{ t('contactOverview.contribution') }}
-        </AppHeading>
-        <ContactContributionFields v-model="data.contribution" />
-      </section>
-      <template #buttons="{ disabled }">
-        <AppButton
-          type="submit"
-          variant="linkOutlined"
-          :disabled="disabled"
-          @click="addAnother = true"
-        >
-          {{ t('actions.saveAndAnother') }}
-        </AppButton>
-      </template>
-    </AppForm>
-  </div>
+  <App2ColGrid>
+    <template #col1>
+      <AppForm
+        :button-text="t('actions.save')"
+        :success-text="t('addContact.contactSaved')"
+        @submit.prevent="handleSubmit"
+      >
+        <section class="mb-8">
+          <ContactBasicFields
+            v-model:email="data.email"
+            v-model:first-name="data.firstname"
+            v-model:last-name="data.lastname"
+            optional-names
+          />
+          <AppCheckbox
+            v-model="data.subscribeToNewsletter"
+            :label="t('addContact.subscribeToNewsletter')"
+            class="mb-4"
+          />
+        </section>
+        <section class="mb-8">
+          <AppHeading>{{ t('contactOverview.roles') }}</AppHeading>
+          <RoleEditor
+            :roles="data.roles"
+            @delete="handleDeleteRole"
+            @update="handleUpdateRole"
+          />
+        </section>
+        <section class="mb-8">
+          <AppHeading>{{ t('contactOverview.contribution') }}</AppHeading>
+          <ContactContributionFields v-model="data.contribution" />
+        </section>
+        <template #buttons="{ disabled }">
+          <AppButton
+            type="submit"
+            variant="linkOutlined"
+            :disabled="disabled"
+            @click="addAnother = true"
+          >
+            {{ t('actions.saveAndAnother') }}
+          </AppButton>
+        </template>
+      </AppForm>
+    </template>
+  </App2ColGrid>
 </template>
 
 <script lang="ts" setup>
 import {
   ContributionType,
   NewsletterStatus,
-  RoleType,
+  type RoleType,
 } from '@beabee/beabee-common';
 import useVuelidate from '@vuelidate/core';
 import { computed, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import AppHeading from '../../../components/AppHeading.vue';
-import { UpdateContribution } from '../../../components/contact/contact.interface';
-import ContactBasicFields from '../../../components/contact/ContactBasicFields.vue';
-import ContactContributionFields from '../../../components/contact/ContactContributionFields.vue';
-import AppButton from '../../../components/button/AppButton.vue';
-import AppCheckbox from '../../../components/forms/AppCheckbox.vue';
-import AppForm from '../../../components/forms/AppForm.vue';
-import PageTitle from '../../../components/PageTitle.vue';
-import RoleEditor from '../../../components/role/RoleEditor.vue';
-import { addBreadcrumb } from '../../../store/breadcrumb';
-import { ContactRoleData } from '../../../utils/api/api.interface';
-import { createContact } from '../../../utils/api/contact';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
+
+import App2ColGrid from '@components/App2ColGrid.vue';
+import AppHeading from '@components/AppHeading.vue';
+import type { UpdateContribution } from '@components/contact/contact.interface';
+import ContactBasicFields from '@components/contact/ContactBasicFields.vue';
+import ContactContributionFields from '@components/contact/ContactContributionFields.vue';
+import AppButton from '@components/button/AppButton.vue';
+import AppCheckbox from '@components/forms/AppCheckbox.vue';
+import AppForm from '@components/forms/AppForm.vue';
+import PageTitle from '@components/PageTitle.vue';
+import RoleEditor from '@components/role/RoleEditor.vue';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import { createContact } from '@utils/api/contact';
+
+import type { ContactRoleData } from '@type';
 
 const { t } = useI18n();
 const router = useRouter();
@@ -133,8 +135,8 @@ async function saveContact() {
           period: undefined,
         }
       : data.contribution.type === ContributionType.Manual
-      ? { ...data.contribution, type: ContributionType.Manual as const }
-      : undefined;
+        ? { ...data.contribution, type: ContributionType.Manual as const }
+        : undefined;
 
   return await createContact({
     email: data.email,

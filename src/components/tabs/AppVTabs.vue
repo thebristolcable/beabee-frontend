@@ -1,5 +1,5 @@
 <template>
-  <ul class="mr-5 flex flex-col">
+  <ul class="flex flex-col">
     <li v-for="item in items" :key="item.id">
       <AppVTabsItem
         :item="item"
@@ -10,7 +10,7 @@
   </ul>
 </template>
 <script lang="ts" setup>
-import { TabItem } from './tabs.interface';
+import { type TabItem } from './tabs.interface';
 import AppVTabsItem from './AppVTabsItem.vue';
 
 const emit = defineEmits(['update:modelValue']);

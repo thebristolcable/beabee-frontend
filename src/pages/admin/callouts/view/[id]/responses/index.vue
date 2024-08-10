@@ -151,11 +151,7 @@ meta:
           <span v-else>-</span>
         </template>
         <template #value-createdAt="{ value }">
-          {{
-            t('common.timeAgo', {
-              time: formatDistanceLocale(new Date(), value),
-            })
-          }}
+          <AppTime :datetime="value" />
         </template>
 
         <template #after="{ item }">
@@ -178,25 +174,20 @@ meta:
                 {{
                   stringifyAnswer(
                     currentInlineComponent,
-                    item.answers[currentInlineComponent.key]
+                    (item.answers[currentInlineComponent.slideId] as any)?.[
+                      currentInlineComponent.key
+                    ]
                   )
                 }}
               </span>
             </p>
             <div v-if="showLatestComment && item.latestComment">
               <font-awesome-icon :icon="faComment" class="mr-2" />
-              <span class="font-semibold text-body-60">
-                {{
-                  t('common.timeAgo', {
-                    time: formatDistanceLocale(
-                      new Date(),
-                      item.latestComment.createdAt
-                    ),
-                  })
-                }}
-                •
-              </span>
-              <b>{{ item.latestComment.contact.displayName }}:{{ ' ' }}</b>
+              <AppTime
+                class="font-semibold text-body-60"
+                :datetime="item.latestComment.createdAt"
+              />
+              <b> • {{ item.latestComment.contact.displayName }}:{{ ' ' }}</b>
               <span
                 class="inline-block italic"
                 v-html="item.latestComment.text"
@@ -210,48 +201,42 @@ meta:
 </template>
 <script lang="ts" setup>
 import {
-  flattenComponents,
-  Paginated,
-  Rule,
-  RuleGroup,
+  type Paginated,
+  type Rule,
+  type RuleGroup,
+  getCalloutComponents,
   stringifyAnswer,
 } from '@beabee/beabee-common';
 import { computed, onBeforeMount, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import AppButton from '../../../../../../components/button/AppButton.vue';
-import AppSelect from '../../../../../../components/forms/AppSelect.vue';
-import AppVTabs from '../../../../../../components/tabs/AppVTabs.vue';
+import AppButton from '@components/button/AppButton.vue';
+import AppSelect from '@components/forms/AppSelect.vue';
+import AppVTabs from '@components/tabs/AppVTabs.vue';
 import {
   filterGroups,
   filterItems,
   headers,
-} from '../../../../../../components/pages/admin/callout-responses.interface';
-import AppSearch from '../../../../../../components/search/AppSearch.vue';
-import {
-  GetCalloutDataWith,
-  GetCalloutResponseWith,
-  GetCalloutResponseDataWith,
-  UpdateCalloutResponseData,
-} from '../../../../../../utils/api/api.interface';
-import { fetchResponses, fetchTags } from '../../../../../../utils/api/callout';
-import { convertComponentsToFilters } from '../../../../../../utils/callouts';
-import { formatDistanceLocale } from '../../../../../../utils/dates';
-import AppButtonGroup from '../../../../../../components/button/AppButtonGroup.vue';
-import { updateCalloutResponses } from '../../../../../../utils/api/callout-response';
-import AppTag from '../../../../../../components/AppTag.vue';
-import MoveBucketButton from '../../../../../../components/pages/admin/callouts/MoveBucketButton.vue';
-import ToggleTagButton from '../../../../../../components/pages/admin/callouts/ToggleTagButton.vue';
-import { buckets } from '../../../../../../components/pages/admin/callouts/callouts.interface';
-import SetAssigneeButton from '../../../../../../components/pages/admin/callouts/SetAssigneeButton.vue';
-import { fetchContacts } from '../../../../../../utils/api/contact';
-import AppPaginatedTable from '../../../../../../components/table/AppPaginatedTable.vue';
+} from '@components/pages/admin/callout-responses.interface';
+import AppSearch from '@components/search/AppSearch.vue';
+
+import { fetchResponses, fetchTags } from '@utils/api/callout';
+import { convertComponentsToFilters } from '@utils/callouts';
+import AppButtonGroup from '@components/button/AppButtonGroup.vue';
+import { updateCalloutResponses } from '@utils/api/callout-response';
+import AppTag from '@components/AppTag.vue';
+import MoveBucketButton from '@components/pages/admin/callouts/MoveBucketButton.vue';
+import ToggleTagButton from '@components/pages/admin/callouts/ToggleTagButton.vue';
+import { buckets } from '@components/pages/admin/callouts/callouts.interface';
+import SetAssigneeButton from '@components/pages/admin/callouts/SetAssigneeButton.vue';
+import { fetchContacts } from '@utils/api/contact';
+import AppPaginatedTable from '@components/table/AppPaginatedTable.vue';
 import {
   definePaginatedQuery,
   defineParam,
   defineRulesParam,
-} from '../../../../../../utils/pagination';
-import AppCheckbox from '../../../../../../components/forms/AppCheckbox.vue';
+} from '@utils/pagination';
+import AppCheckbox from '@components/forms/AppCheckbox.vue';
 import {
   faComment,
   faDownload,
@@ -259,8 +244,16 @@ import {
   faUser,
   faUserPen,
 } from '@fortawesome/free-solid-svg-icons';
-import { addNotification } from '../../../../../../store/notifications';
-import { addBreadcrumb } from '../../../../../../store/breadcrumb';
+import { addNotification } from '@store/notifications';
+import { addBreadcrumb } from '@store/breadcrumb';
+import AppTime from '@components/AppTime.vue';
+
+import type {
+  GetCalloutDataWith,
+  GetCalloutResponseWith,
+  GetCalloutResponseDataWith,
+  UpdateCalloutResponseData,
+} from '@type';
 
 const props = defineProps<{ callout: GetCalloutDataWith<'form'> }>();
 
@@ -284,7 +277,7 @@ const currentInlineAnswer = ref('');
 const currentInlineComponent = computed(
   () =>
     showInlineAnswer.value &&
-    formComponents.value.find((c) => c.key === currentInlineAnswer.value)
+    formComponents.value.find((c) => c.fullKey === currentInlineAnswer.value)
 );
 
 const selectedResponseItems = computed(
@@ -328,13 +321,11 @@ const bucketItems = computed(() =>
 );
 
 const formComponents = computed(() =>
-  flattenComponents(props.callout.formSchema.components).filter(
-    (c) => !!c.input && c.type !== 'button'
-  )
+  getCalloutComponents(props.callout.formSchema).filter((c) => !!c.input)
 );
 
-const formFilterItems = computed(() =>
-  convertComponentsToFilters(formComponents.value)
+const formFilterItems = computed(
+  () => convertComponentsToFilters(formComponents.value) // TODO: Use @beabee/beabee-common method
 );
 
 const filterGroupsWithQuestions = computed(() => [

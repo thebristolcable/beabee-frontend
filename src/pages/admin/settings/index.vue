@@ -6,8 +6,8 @@ meta:
 </route>
 
 <template>
-  <div class="grid md:grid-cols-2 md:gap-12 lg:grid-cols-3">
-    <div>
+  <App2ColGrid>
+    <template #col1>
       <AppForm
         :button-text="t('actions.update')"
         :success-text="t('form.saved')"
@@ -33,7 +33,7 @@ meta:
           <AppSelect
             v-model="generalData.locale"
             :label="t('adminSettings.general.language')"
-            :items="locales"
+            :items="localeItems"
             class="w-60"
             required
           />
@@ -84,9 +84,45 @@ meta:
           />
         </div>
       </AppForm>
-    </div>
-    <div>
+    </template>
+    <template #col2>
       <div class="my-8 border-b border-b-primary-40 md:hidden" />
+
+      <!-- Remove this hidden div to make the payment tax form visible -->
+      <div class="hidden">
+        <AppForm
+          :button-text="t('actions.update')"
+          :success-text="t('form.saved')"
+          @submit="handleSavePayment"
+        >
+          <AppSubHeading>
+            {{ t('adminSettings.payment.paymentTitle') }}</AppSubHeading
+          >
+          <div class="mb-4">
+            <AppCheckbox
+              v-model="paymentData.taxRateEnabled"
+              :label="t('adminSettings.payment.taxRateEnabled')"
+              class="font-bold"
+            />
+          </div>
+          <div
+            v-if="paymentData.taxRateEnabled"
+            class="mb-4 max-w-[8rem] whitespace-nowrap"
+          >
+            <AppInput
+              v-model="paymentData.taxRate"
+              type="number"
+              :label="t('adminSettings.payment.taxRate')"
+              :min="0"
+              :max="100"
+              suffix="%"
+              required
+            />
+          </div>
+        </AppForm>
+        <div class="my-8 border-b border-b-primary-40" />
+      </div>
+
       <AppForm
         :button-text="t('actions.update')"
         :success-text="t('form.saved')"
@@ -106,7 +142,7 @@ meta:
             required
           />
         </div>
-        <AppSubHeading class="mb-2">
+        <AppSubHeading>
           {{ t('adminSettings.general.footer.dataPrivacy.title') }}
         </AppSubHeading>
         <div class="mb-4">
@@ -131,88 +167,39 @@ meta:
             type="url"
           />
         </div>
-        <AppSubHeading class="mb-2">
+        <AppSubHeading>
           {{ t('adminSettings.general.footer.otherLinks.title') }}
         </AppSubHeading>
-        <div
-          v-for="(link, i) in footerData.footerLinks"
-          :key="i"
-          class="mb-4 flex gap-4"
-        >
-          <div class="flex-1">
-            <AppInput
-              v-model="footerData.footerLinks[i].text"
-              :label="t('adminSettings.general.footer.otherLinks.linkText')"
-              required
-            />
-          </div>
-          <div class="flex-1">
-            <AppInput
-              v-model="footerData.footerLinks[i].url"
-              :label="t('adminSettings.general.footer.otherLinks.url')"
-              type="url"
-              required
-            />
-          </div>
-          <div class="flex-0 self-end">
-            <button
-              class="-ml-2 p-2 leading-tight text-primary-80 hover:text-primary"
-              type="button"
-              @click="removeLink(i)"
-            >
-              <font-awesome-icon :icon="faTimes" />
-            </button>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <AppButton
-            variant="primaryOutlined"
-            size="sm"
-            :icon="faPlus"
-            @click="addLink"
-          >
-            {{ t('adminSettings.general.footer.otherLinks.add') }}
-          </AppButton>
-        </div>
+        <AppLinkList v-model="footerData.footerLinks" class="mb-4" />
       </AppForm>
-    </div>
-  </div>
+    </template>
+  </App2ColGrid>
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios';
 import { onBeforeMount, reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppImageUpload from '../../../components/forms/AppImageUpload.vue';
-import AppInput from '../../../components/forms/AppInput.vue';
-import AppSelect from '../../../components/forms/AppSelect.vue';
-import AppTextArea from '../../../components/forms/AppTextArea.vue';
-import AppButton from '../../../components/button/AppButton.vue';
-import { ShareContent } from '../../../utils/api/api.interface';
-import { fetchContent, updateContent } from '../../../utils/api/content';
-import { generalContent as storeGeneralContent } from '../../../store';
-import AppHeading from '../../../components/AppHeading.vue';
-import axios from '../../../lib/axios';
-import AppForm from '../../../components/forms/AppForm.vue';
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import AppSubHeading from '../../../components/AppSubHeading.vue';
+
+import AppImageUpload from '@components/forms/AppImageUpload.vue';
+import AppInput from '@components/forms/AppInput.vue';
+import AppSelect from '@components/forms/AppSelect.vue';
+import AppTextArea from '@components/forms/AppTextArea.vue';
+import AppHeading from '@components/AppHeading.vue';
+import AppForm from '@components/forms/AppForm.vue';
+import App2ColGrid from '@components/App2ColGrid.vue';
+import AppSubHeading from '@components/AppSubHeading.vue';
+import AppLinkList from '@components/forms/AppLinkList.vue';
+import AppCheckbox from '@components/forms/AppCheckbox.vue';
+
+import { fetchContent, updateContent } from '@utils/api/content';
+
+import { generalContent as storeGeneralContent } from '@store';
+
+import type { ContentShareData, ContentPaymentData } from '@type';
+import { localeItems } from '@lib/i18n';
 
 const { t } = useI18n();
-
-const locales = [
-  {
-    id: 'en',
-    label: 'English',
-  },
-  {
-    id: 'de',
-    label: 'German (formal)',
-  },
-  {
-    id: 'de@informal',
-    label: 'German (informal)',
-  },
-];
 
 const generalData = reactive({
   organisationName: '',
@@ -227,21 +214,20 @@ const footerData = reactive({
   footerLinks: [] as { text: string; url: string }[],
 });
 
-const shareContent = ref<ShareContent>();
+const paymentData = ref<Pick<ContentPaymentData, 'taxRateEnabled' | 'taxRate'>>(
+  {
+    taxRateEnabled: false,
+    taxRate: 7,
+  }
+);
 
-function addLink() {
-  footerData.footerLinks.push({ text: '', url: 'https://' });
-}
-
-function removeLink(i: number) {
-  footerData.footerLinks.splice(i, 1);
-}
+const shareContent = ref<ContentShareData>();
 
 async function handleSaveGeneral() {
   storeGeneralContent.value = await updateContent('general', generalData);
 
   // Refresh the favicon
-  await axios.get('/favicon.png', { baseURL: '' });
+  await axios.get('/favicon.png');
   const faviconEl = document.getElementById('favicon') as HTMLLinkElement;
   // This just forces the browser to reload the image
   // eslint-disable-next-line no-self-assign
@@ -255,6 +241,9 @@ async function handleSaveShare() {
 
 async function handleSaveFooter() {
   storeGeneralContent.value = await updateContent('general', footerData);
+}
+async function handleSavePayment() {
+  await updateContent('payment', paymentData.value);
 }
 
 onBeforeMount(async () => {
@@ -270,5 +259,11 @@ onBeforeMount(async () => {
     storeGeneralContent.value.footerLinks?.map((l) => ({ ...l })) || [];
 
   shareContent.value = await fetchContent('share');
+
+  const paymentContent = await fetchContent('payment');
+  paymentData.value = {
+    taxRateEnabled: paymentContent.taxRateEnabled,
+    taxRate: paymentContent.taxRate,
+  };
 });
 </script>

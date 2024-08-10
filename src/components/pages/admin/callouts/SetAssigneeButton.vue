@@ -3,21 +3,16 @@
     :icon="faUser"
     variant="primaryOutlined"
     :title="t('calloutResponsePage.actions.assignTo')"
+    :show-title="withText"
   >
-    <span v-if="withText">
-      {{ t('calloutResponsePage.actions.assignTo') }}
-    </span>
-
-    <template #dropdown>
-      <AppSelectableList
-        v-slot="{ item }"
-        :items="admins"
-        :selected-item-ids="currentAssigneeId ? [currentAssigneeId] : []"
-        @click="handleAssign"
-      >
-        {{ item.displayName }}
-      </AppSelectableList>
-    </template>
+    <AppSelectableList
+      v-slot="{ item }"
+      :items="admins"
+      :selected-item-ids="currentAssigneeId ? [currentAssigneeId] : []"
+      @click="handleAssign"
+    >
+      {{ item.displayName }}
+    </AppSelectableList>
   </AppDropdownButton>
 </template>
 
@@ -25,10 +20,13 @@
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { onBeforeMount, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { GetContactData } from '../../../../utils/api/api.interface';
-import { fetchContacts } from '../../../../utils/api/contact';
-import AppSelectableList from '../../../AppSelectableList.vue';
-import AppDropdownButton from '../../../button/AppDropdownButton.vue';
+
+import AppSelectableList from '@components/AppSelectableList.vue';
+import AppDropdownButton from '@components/button/AppDropdownButton.vue';
+
+import { fetchContacts } from '@utils/api/contact';
+
+import type { GetContactData } from '@type';
 
 const emit = defineEmits<{
   (event: 'assign', id: string | null, successText: string): void;

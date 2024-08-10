@@ -1,7 +1,6 @@
 <template>
   <CalloutSidePanel :show="!!answers" @close="$emit('close')">
-    <AppHeading class="mb-4">{{ t('callout.addLocation') }}</AppHeading>
-    <CalloutThanksBox v-if="showOnlyThanks" :callout="callout" />
+    <CalloutThanksBox v-if="showOnlyThanks" :callout="callout" class="p-0" />
     <template v-else>
       <CalloutLoginPrompt v-if="showLoginPrompt" />
       <CalloutMemberOnlyPrompt v-else-if="showMemberOnlyPrompt" />
@@ -17,25 +16,22 @@
 </template>
 
 <script lang="ts" setup>
-import { CalloutResponseAnswers } from '@beabee/beabee-common';
-import { GetCalloutDataWith } from '../../../utils/api/api.interface';
+import { type CalloutResponseAnswers } from '@beabee/beabee-common';
 import CalloutForm from './CalloutForm.vue';
 import CalloutMemberOnlyPrompt from './CalloutMemberOnlyPrompt.vue';
 import CalloutLoginPrompt from './CalloutLoginPrompt.vue';
 import { useCallout } from './use-callout';
 import { ref, toRef, watch } from 'vue';
 import CalloutSidePanel from './CalloutSidePanel.vue';
-import AppHeading from '../../AppHeading.vue';
 import CalloutThanksBox from './CalloutThanksBox.vue';
-import { useI18n } from 'vue-i18n';
+
+import type { GetCalloutDataWith } from '@type';
 
 defineEmits<(e: 'close') => void>();
 const props = defineProps<{
-  callout: GetCalloutDataWith<'form'>;
+  callout: GetCalloutDataWith<'form' | 'variantNames'>;
   answers?: CalloutResponseAnswers;
 }>();
-
-const { t } = useI18n();
 
 const showOnlyThanks = ref(false);
 

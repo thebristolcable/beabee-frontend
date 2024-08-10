@@ -7,10 +7,19 @@ meta:
 
 <template>
   <PageTitle :title="t('menu.notices')" border>
-    <div class="flex-0 ml-3">
+    <div class="flex-0 ml-3 hidden md:block">
       <AppButton to="/admin/notices/add">{{
         t('notices.addNotice')
       }}</AppButton>
+    </div>
+    <div class="fixed bottom-5 right-5 md:hidden">
+      <AppButton
+        :icon="faPlus"
+        :title="t('notices.addNotice')"
+        class="rounded-full drop-shadow-md"
+        size="lg"
+        to="/admin/notices/add"
+      />
     </div>
   </PageTitle>
   <AppPaginatedTable
@@ -36,20 +45,24 @@ meta:
   </AppPaginatedTable>
 </template>
 <script lang="ts" setup>
-import { Paginated } from '@beabee/beabee-common';
+import type { Paginated } from '@beabee/beabee-common';
 import { computed, ref, watchEffect } from 'vue';
 import { useI18n } from 'vue-i18n';
-import AppButton from '../../../components/button/AppButton.vue';
-import PageTitle from '../../../components/PageTitle.vue';
-import { GetNoticeData } from '../../../utils/api/api.interface';
-import { Header } from '../../../components/table/table.interface';
-import { fetchNotices } from '../../../utils/api/notice';
-import { formatLocale } from '../../../utils/dates';
-import AppItemStatus from '../../../components/AppItemStatus.vue';
-import { addBreadcrumb } from '../../../store/breadcrumb';
-import { definePaginatedQuery } from '../../../utils/pagination';
-import AppPaginatedTable from '../../../components/table/AppPaginatedTable.vue';
-import { faSignHanging } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSignHanging } from '@fortawesome/free-solid-svg-icons';
+
+import AppButton from '@components/button/AppButton.vue';
+import PageTitle from '@components/PageTitle.vue';
+import type { Header } from '@components/table/table.interface';
+import AppItemStatus from '@components/AppItemStatus.vue';
+import AppPaginatedTable from '@components/table/AppPaginatedTable.vue';
+
+import { addBreadcrumb } from '@store/breadcrumb';
+
+import { fetchNotices } from '@utils/api/notice';
+import { formatLocale } from '@utils/dates';
+import { definePaginatedQuery } from '@utils/pagination';
+
+import type { GetNoticeData } from '@type';
 
 const { t } = useI18n();
 

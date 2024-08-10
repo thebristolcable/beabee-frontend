@@ -6,9 +6,9 @@ meta:
 </route>
 
 <template>
-  <div class="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-    <div>
-      <AppHeading class="mb-2">
+  <App2ColGrid>
+    <template #col1>
+      <AppHeading>
         {{ t('contribution.updateContribution') }}
       </AppHeading>
       <template v-if="contributionData && contributionInfo">
@@ -49,34 +49,33 @@ meta:
           </AppConfirmDialog>
         </template>
       </template>
-    </div>
-    <div>
+    </template>
+    <template #col2>
       <ContactPaymentsHistory :id="contact.id" />
-    </div>
-  </div>
+    </template>
+  </App2ColGrid>
 </template>
 <script lang="ts" setup>
 import { ContributionType } from '@beabee/beabee-common';
 import { onBeforeMount, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
-import {
-  ContributionInfo,
-  GetContactData,
-} from '../../../../utils/api/api.interface';
-import AppHeading from '../../../../components/AppHeading.vue';
-import ContactPaymentsHistory from '../../../../components/contact/ContactPaymentsHistory.vue';
-import {
-  fetchContact,
-  forceUpdateContribution,
-} from '../../../../utils/api/contact';
-import { UpdateContribution } from '../../../../components/contact/contact.interface';
-import AppForm from '../../../../components/forms/AppForm.vue';
-import ContactContributionFields from '../../../../components/contact/ContactContributionFields.vue';
-import ContactCancelContribution from '../../../../components/contact/ContactCancelContribution.vue';
-import AppConfirmDialog from '../../../../components/AppConfirmDialog.vue';
-import { cancelContribution } from '../../../../utils/api/contact';
 import { useRouter } from 'vue-router';
-import AppNotification from '../../../../components/AppNotification.vue';
+import { useI18n } from 'vue-i18n';
+
+import AppHeading from '@components/AppHeading.vue';
+import ContactPaymentsHistory from '@components/contact/ContactPaymentsHistory.vue';
+import type { UpdateContribution } from '@components/contact/contact.interface';
+import AppForm from '@components/forms/AppForm.vue';
+import ContactContributionFields from '@components/contact/ContactContributionFields.vue';
+import App2ColGrid from '@components/App2ColGrid.vue';
+import ContactCancelContribution from '@components/contact/ContactCancelContribution.vue';
+import AppConfirmDialog from '@components/AppConfirmDialog.vue';
+import { cancelContribution } from '@utils/api/contact';
+
+import AppNotification from '@components/AppNotification.vue';
+
+import { fetchContact, forceUpdateContribution } from '@utils/api/contact';
+
+import type { ContributionInfo, GetContactData } from '@type';
 
 const { t } = useI18n();
 

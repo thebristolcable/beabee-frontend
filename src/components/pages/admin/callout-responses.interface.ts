@@ -1,15 +1,15 @@
 import {
-  CalloutResponseFilterName,
+  type CalloutResponseFilterName,
   calloutResponseFilters,
 } from '@beabee/beabee-common';
 import { computed } from 'vue';
 import i18n from '../../../lib/i18n';
 import {
-  FilterGroup,
-  FilterItems,
+  type FilterGroup,
+  type FilterItems,
   withLabel,
 } from '../../search/search.interface';
-import { Header } from '../../table/table.interface';
+import { type Header } from '../../table/table.interface';
 
 const { t } = i18n.global;
 
@@ -47,6 +47,10 @@ export const filterGroups = computed<FilterGroup<CalloutResponseFilterName>[]>(
 export const filterItems = computed<FilterItems<CalloutResponseFilterName>>(
   () => ({
     id: withLabel(calloutResponseFilters.id, ''),
+    calloutId: withLabel(
+      calloutResponseFilters.calloutId,
+      t('calloutResponse.data.callout')
+    ),
     createdAt: withLabel(
       calloutResponseFilters.createdAt,
       t('calloutResponse.data.createdAt')
@@ -62,10 +66,6 @@ export const filterItems = computed<FilterItems<CalloutResponseFilterName>>(
     tags: withLabel(
       calloutResponseFilters.tags,
       t('calloutResponse.data.tags')
-    ),
-    callout: withLabel(
-      calloutResponseFilters.callout,
-      t('calloutResponse.data.callout')
     ),
     contact: withLabel(
       calloutResponseFilters.contact,

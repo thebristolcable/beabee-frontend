@@ -1,9 +1,10 @@
-import { CalloutResponseAnswerAddress } from '@beabee/beabee-common';
-import { GeocodingFeature } from '@maptiler/client';
+import { type CalloutResponseAnswerAddress } from '@beabee/beabee-common';
+import { type GeocodingFeature } from '@maptiler/client';
 import { geocoding } from '../lib/maptiler';
-import { generalContent } from '../store';
+import env from '../env';
+import { currentLocaleConfig } from '@lib/i18n';
 
-interface GeocodeResult {
+export interface GeocodeResult {
   formatted_address: string;
   geometry: {
     location: {
@@ -32,9 +33,13 @@ export async function reverseGeocode(
   lat: number,
   lng: number
 ): Promise<GeocodeResult | undefined> {
+  if (!env.maptilerKey) {
+    return undefined;
+  }
+
   const data = await geocoding.reverse([lng, lat], {
-    language: generalContent.value.locale,
-    types: ['address', 'postal_code', 'municipality', 'county'],
+    language: currentLocaleConfig.value.baseLocale,
+    types: ['address', 'postal_code', 'municipality', 'county', 'region'],
   });
 
   if (!data.features.length) {

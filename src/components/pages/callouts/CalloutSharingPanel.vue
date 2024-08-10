@@ -1,5 +1,5 @@
 <template>
-  <div class="my-2 flex h-auto flex-col border border-primary-40 p-5">
+  <div class="mb-6 flex h-auto flex-col border border-primary-40 p-5">
     {{ t('callout.share.address') }}
 
     <div
@@ -7,7 +7,7 @@
     >
       <span class="mr-2 text-link">{{ calloutUrl }}</span>
       <AppButton :icon="faCopy" size="sm" @click="copyToClipboard">
-        {{ t('common.copy') }}
+        {{ t('actions.copy') }}
       </AppButton>
     </div>
 

@@ -5,26 +5,27 @@ meta:
 </route>
 
 <template>
-  <PageTitle
-    :title="t('accountPage.title')"
-    :sub-title="t('accountPage.subTitle')"
-  />
+  <PageTitle border :title="t('accountPage.title')" />
+  <p class="mb-5 text-sm text-primary-80">{{ t('accountPage.subTitle') }}</p>
 
-  <div class="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-    <div>
+  <App2ColGrid>
+    <template #col1>
       <ChangePassword />
+      <SetMFA contact-id="me" />
       <Suspense>
-        <ContactUpdateAccount id="me" />
+        <ContactUpdateAccount id="me" class="mt-6" />
       </Suspense>
-    </div>
-  </div>
+    </template>
+  </App2ColGrid>
 </template>
 
 <script lang="ts" setup>
 import PageTitle from '../../components/PageTitle.vue';
 import { useI18n } from 'vue-i18n';
 import ChangePassword from '../../components/pages/profile/account/ChangePassword.vue';
+import SetMFA from '../../components/pages/profile/account/SetMFA.vue';
 import ContactUpdateAccount from '../../components/contact/ContactUpdateAccount.vue';
+import App2ColGrid from '../../components/App2ColGrid.vue';
 
 const { t } = useI18n();
 </script>

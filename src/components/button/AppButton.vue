@@ -9,6 +9,7 @@
   <component
     :is="is"
     v-else
+    ref="innerButton"
     :disabled="disabled || loading"
     :class="buttonClasses"
     :type="type"
@@ -29,9 +30,10 @@
 <script lang="ts" setup>
 import {
   faCircleNotch,
-  IconDefinition,
+  type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import { type RouteLocationRaw } from 'vue-router';
 
 // Variant classes for [base, hover, loading icon]
 const variantClasses = {
@@ -61,6 +63,11 @@ const variantClasses = {
     'hover:bg-danger-10',
     'text-danger',
   ],
+  greyOutlined: [
+    'bg-white text-body-80 border-grey-light',
+    'hover:border-grey',
+    'text-body',
+  ],
   text: ['underline text-link border-0', 'hover:text-link-110', ''],
   dangerText: ['underline text-danger border-0', 'hover:text-danger-110', ''],
 } as const;
@@ -69,6 +76,7 @@ const sizeClasses = {
   xs: 'text-sm px-2 py-1',
   sm: 'text-sm p-2',
   md: 'px-3 py-2.5',
+  lg: 'text-3xl px-4.5 py-4',
 } as const;
 
 const props = withDefaults(
@@ -77,9 +85,9 @@ const props = withDefaults(
     loading?: boolean;
     type?: 'button' | 'submit';
     href?: string;
-    to?: string;
+    to?: RouteLocationRaw;
     variant?: keyof typeof variantClasses;
-    size?: 'xs' | 'sm' | 'md';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
     icon?: IconDefinition;
     is?: 'button' | 'label';
   }>(),
@@ -93,6 +101,14 @@ const props = withDefaults(
     is: 'button',
   }
 );
+
+const innerButton = ref<HTMLAnchorElement | HTMLButtonElement | null>(null);
+
+const focus = () => {
+  if (innerButton.value) {
+    innerButton.value.focus();
+  }
+};
 
 const buttonClasses = computed(() => {
   return [
@@ -112,4 +128,10 @@ const buttonClasses = computed(() => {
 });
 
 const loadingIconClasses = computed(() => variantClasses[props.variant][2]);
+
+// Allow to focus the button from outside
+defineExpose({
+  focus,
+  innerButton,
+});
 </script>

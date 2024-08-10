@@ -4,9 +4,7 @@
     :success-text="t('form.saved')"
     @submit="handleSubmit"
   >
-    <AppHeading class="mb-2 mt-6">
-      {{ t('accountPage.contactInformation') }}
-    </AppHeading>
+    <AppHeading>{{ t('accountPage.contactInformation') }}</AppHeading>
 
     <ContactBasicFields
       v-model:email="data.emailAddress"
@@ -26,7 +24,7 @@
     </div>
 
     <template v-if="accountContent.showNewsletterOptIn && isAdmin">
-      <AppHeading class="mb-2 mt-6">
+      <AppHeading class="mt-6">
         {{ t('accountPage.newsletter.title') }}
       </AppHeading>
 
@@ -57,7 +55,7 @@
       />
     </template>
 
-    <AppHeading class="mb-2 mt-6">
+    <AppHeading class="mt-6">
       {{ t('accountPage.deliveryAddress') }}
     </AppHeading>
 

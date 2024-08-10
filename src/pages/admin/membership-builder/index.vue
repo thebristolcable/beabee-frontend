@@ -6,113 +6,125 @@ meta:
 </route>
 
 <template>
-  <div class="mb-8 grid grid-cols-2 gap-8">
-    <div>
+  <App2ColGrid class="mb-8">
+    <template #col1>
       <p>{{ stepT('text') }}</p>
-    </div>
-  </div>
-  <div v-if="joinContent" class="mb-12 grid grid-cols-2 gap-8">
-    <AppForm
-      :button-text="t('form.saveChanges')"
-      :success-text="t('form.saved')"
-      @submit="handleUpdate"
-    >
-      <div class="mb-4">
-        <AppInput
-          v-model="joinContent.title"
-          :label="stepT('formTitle')"
-          required
-        />
-      </div>
-      <RichTextEditor
-        v-model="joinContent.subtitle"
-        :label="stepT('formSubtitle')"
-        class="mb-4"
-      />
-
-      <AppImageUpload
-        v-model="validation.backgroundUrl.$model"
-        :label="stepT('backgroundImage')"
-        :width="1440"
-        :height="810"
-        class="mb-4"
-        required
-        :error-message="validation.backgroundUrl.$errors[0]?.$message"
-      />
-
-      <AppSubHeading class="mb-2">
-        {{ stepT('suggestedAmounts') }} *
-      </AppSubHeading>
-      <div class="mb-4 flex gap-4">
-        <PeriodAmounts
-          v-for="(period, periodI) in joinContent.periods"
-          :key="period.name"
-          v-model="joinContent.periods[periodI].presetAmounts"
-          :period="period.name"
-          :min-monthly-amount="joinContent.minMonthlyAmount"
-          class="flex-1"
-        />
-      </div>
-      <div class="mb-4 flex gap-4">
-        <div class="flex-1">
-          <AppLabel :label="stepT('minAmount')" />
+    </template>
+  </App2ColGrid>
+  <App2ColGrid v-if="joinContent" extended>
+    <template #col1>
+      <AppForm
+        :button-text="t('form.saveChanges')"
+        :success-text="t('form.saved')"
+        @submit="handleUpdate"
+      >
+        <div class="mb-4">
           <AppInput
-            v-model="joinContent.minMonthlyAmount"
-            type="number"
-            :min="1"
-            required
-            class="block w-32"
-          />
-        </div>
-        <div class="flex-1">
-          <AppSelect
-            v-model="selectedDefaultAmount"
-            :label="stepT('defaultAmount')"
-            :items="defaultAmounts"
+            v-model="joinContent.title"
+            :label="stepT('formTitle')"
             required
           />
         </div>
-      </div>
-      <div class="mb-4 flex gap-4">
+        <RichTextEditor
+          v-model="joinContent.subtitle"
+          :label="stepT('formSubtitle')"
+          class="mb-4"
+        />
+
+        <AppImageUpload
+          v-model="validation.backgroundUrl.$model"
+          :label="stepT('backgroundImage')"
+          :width="1440"
+          :height="810"
+          class="mb-4"
+          required
+          :error-message="validation.backgroundUrl.$errors[0]?.$message"
+        />
+
+        <AppSubHeading> {{ stepT('suggestedAmounts') }} * </AppSubHeading>
+        <div class="mb-4 flex gap-4">
+          <PeriodAmounts
+            v-for="(period, periodI) in joinContent.periods"
+            :key="period.name"
+            v-model="joinContent.periods[periodI].presetAmounts"
+            :period="period.name"
+            :min-monthly-amount="joinContent.minMonthlyAmount"
+            class="flex-1"
+          />
+        </div>
+
+        <div class="mb-4 flex gap-4">
+          <div class="flex-1">
+            <AppLabel :label="stepT('minAmount')" />
+            <div class="max-w-[12rem]">
+              <AppInput
+                v-model="joinContent.minMonthlyAmount"
+                type="number"
+                :min="1"
+                :prefix="generalContent.currencySymbol"
+                :suffix="t('common.perMonth')"
+                required
+                class="block w-32"
+              />
+            </div>
+          </div>
+          <div class="flex-1">
+            <AppSelect
+              v-model="selectedDefaultAmount"
+              :label="stepT('defaultAmount')"
+              :items="defaultAmounts"
+              required
+            />
+          </div>
+        </div>
+        <AppCheckbox
+          v-model="joinContent.showNoContribution"
+          :label="stepT('showNoContribution')"
+          class="mb-4 font-semibold"
+        />
         <AppCheckbox
           v-model="joinContent.showAbsorbFee"
           :label="stepT('showAbsorbFee')"
-          class="font-semibold"
+          class="mb-4 font-semibold"
         />
-      </div>
-    </AppForm>
-    <div
-      class="bg-cover bg-center p-4 pt-8"
-      :style="`background-image: url(${backgroundUrl})`"
-    >
-      <AuthBox>
-        <JoinForm :join-content="joinContent" />
-      </AuthBox>
-    </div>
-  </div>
+      </AppForm>
+    </template>
+    <template #col2>
+      <JoinForm
+        :join-content="joinContent"
+        :payment-content="paymentContent!"
+        preview
+      />
+    </template>
+  </App2ColGrid>
 </template>
 <script lang="ts" setup>
 import { computed, onBeforeMount, ref } from 'vue';
-import { JoinContent } from '../../../utils/api/api.interface';
-import { fetchContent, updateContent } from '../../../utils/api/content';
-import AppForm from '../../../components/forms/AppForm.vue';
-import AppInput from '../../../components/forms/AppInput.vue';
-import RichTextEditor from '../../../components/rte/RichTextEditor.vue';
-import AppLabel from '../../../components/forms/AppLabel.vue';
 import { useI18n } from 'vue-i18n';
-import AppSelect from '../../../components/forms/AppSelect.vue';
-import { ContributionPeriod } from '@beabee/beabee-common';
-import AppCheckbox from '../../../components/forms/AppCheckbox.vue';
-import JoinForm from '../../../components/pages/join/JoinForm.vue';
-import AuthBox from '../../../components/AuthBox.vue';
-import AppImageUpload from '../../../components/forms/AppImageUpload.vue';
-import { generalContent } from '../../../store';
 import useVuelidate from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
-import PeriodAmounts from '../../../components/pages/admin/membership-builder/PeriodAmounts.vue';
-import AppSubHeading from '../../../components/AppSubHeading.vue';
+import { ContributionPeriod } from '@beabee/beabee-common';
 
-const joinContent = ref<JoinContent>();
+import AppForm from '@components/forms/AppForm.vue';
+import AppInput from '@components/forms/AppInput.vue';
+import RichTextEditor from '@components/rte/RichTextEditor.vue';
+import AppLabel from '@components/forms/AppLabel.vue';
+import AppSelect from '@components/forms/AppSelect.vue';
+import AppCheckbox from '@components/forms/AppCheckbox.vue';
+import JoinForm from '@components/pages/join/JoinForm.vue';
+import AppImageUpload from '@components/forms/AppImageUpload.vue';
+import PeriodAmounts from '@components/pages/admin/membership-builder/PeriodAmounts.vue';
+import App2ColGrid from '@components/App2ColGrid.vue';
+import AppSubHeading from '@components/AppSubHeading.vue';
+
+import { fetchContent, updateContent } from '@utils/api/content';
+
+import { generalContent } from '@store';
+
+import type { ContentJoinData, ContentPaymentData } from '@type';
+
+const joinContent = ref<ContentJoinData>();
+const paymentContent = ref<ContentPaymentData>();
 const backgroundUrl = ref('');
 
 const { n, t } = useI18n();
@@ -138,14 +150,20 @@ const defaultAmounts = computed(() => {
     ? joinContent.value.periods.flatMap((period) =>
         period.presetAmounts.map((amount) => ({
           id: `${period.name}_${amount}`,
-          label: `${n(amount, 'currency')}/${t('common.' + period.name)}`,
+          label: `${n(amount, 'currency')} ${
+            period.name === ContributionPeriod.Monthly
+              ? t('common.perMonth')
+              : t('common.perYear')
+          }`,
         }))
       )
     : [];
 });
 
 const validation = useVuelidate(
-  { backgroundUrl: { required } },
+  {
+    backgroundUrl: { required },
+  },
   { backgroundUrl }
 );
 
@@ -162,6 +180,7 @@ async function handleUpdate() {
 
 onBeforeMount(async () => {
   joinContent.value = await fetchContent('join');
+  paymentContent.value = await fetchContent('payment');
   backgroundUrl.value = generalContent.value.backgroundUrl || '';
 });
 </script>

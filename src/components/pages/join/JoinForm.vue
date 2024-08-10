@@ -1,86 +1,95 @@
 <template>
-  <JoinHeader v-if="!isEmbed" :title="joinContent.title" />
+  <AuthBox :title="joinContent.title" :preview="preview">
+    <template #header>
+      <div class="content-message" v-html="joinContent.subtitle" />
+    </template>
 
-  <AppForm :button-text="buttonText" full-button @submit="onSubmit">
-    <div
-      v-if="!isEmbed"
-      class="content-message mb-4"
-      v-html="joinContent.subtitle"
-    />
-
-    <AppSubHeading v-if="joinContent.showNoContribution" class="mb-1">
-      {{ t('join.contribution') }}
-    </AppSubHeading>
-
-    <AppCheckbox
-      v-if="joinContent.showNoContribution"
-      v-model="signUpData.noContribution"
-      class="mb-4"
-      :label="t('join.noContribution')"
-    />
-
-    <Contribution
-      v-if="!generalContent.hideContribution && !signUpData.noContribution"
-      v-model:amount="signUpData.amount"
-      v-model:period="signUpData.period"
-      v-model:payFee="signUpData.payFee"
-      v-model:paymentMethod="signUpData.paymentMethod"
-      :content="joinContent"
-    >
+    <AppForm :button-text="buttonText" full-button @submit="onSubmit">
       <AccountSection
+        v-if="generalContent.hideContribution"
         v-model:email="signUpData.email"
         v-model:password="signUpData.password"
+        class="mb-6"
       />
-    </Contribution>
+      <Contribution
+        v-else
+        v-model:amount="signUpData.amount"
+        v-model:period="signUpData.period"
+        v-model:payFee="signUpData.payFee"
+        v-model:paymentMethod="signUpData.paymentMethod"
+        :content="joinContent"
+        :payment-content="paymentContent"
+        :disabled="signUpData.noContribution"
+      >
+        <AppCheckbox
+          v-if="joinContent.showNoContribution"
+          v-model="signUpData.noContribution"
+          class="mb-4"
+          :label="t('join.noContribution')"
+        />
+        <AccountSection
+          v-model:email="signUpData.email"
+          v-model:password="signUpData.password"
+          class="my-6"
+        />
+      </Contribution>
+    </AppForm>
 
-    <!-- TODO: clean this up by always having account section above contribution -->
-    <AccountSection
-      v-else
-      v-model:email="signUpData.email"
-      v-model:password="signUpData.password"
-    />
-  </AppForm>
-
-  <p class="mb-2 mt-6 text-center text-xs">
-    {{ t('join.notice') }}
-    <a
-      class="text-link underline hover:text-primary"
-      :href="generalContent.privacyLink"
-      target="_blank"
-      rel="noreferrer"
-      >{{ t('join.privacy') }}</a
-    >.
-  </p>
-  <p class="text-center text-xs">
-    <a href="https://beabee.io" target="_blank">
-      <img class="inline" :src="beabeeLogo" width="30" />
-      {{ t('join.poweredBy') }}
-    </a>
-  </p>
+    <div class="mt-3 text-center text-xs">
+      <p
+        v-if="!signUpData.noContribution && paymentContent.taxRateEnabled"
+        class="mb-2"
+      >
+        {{ t('join.tax.included', { taxRate: paymentContent.taxRate }) }}
+      </p>
+      <p class="mb-2">
+        {{ t('join.notice') }}
+        <a
+          class="text-link underline hover:text-primary"
+          :href="generalContent.privacyLink"
+          target="_blank"
+          rel="noreferrer"
+          >{{ t('join.privacy') }}</a
+        >.
+      </p>
+      <p>
+        <a href="https://beabee.io" target="_blank">
+          <img class="inline" :src="beabeeLogo" width="30" />
+          {{ t('join.poweredBy') }}
+        </a>
+      </p>
+    </div>
+  </AuthBox>
 </template>
 <script lang="ts" setup>
 import { computed, toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
 import useVuelidate from '@vuelidate/core';
-import { generalContent, isEmbed } from '../../../store';
+import { generalContent } from '@store';
 import { useJoin } from './use-join';
+
+import beabeeLogo from '@assets/images/beabee-logo.png';
+
 import AccountSection from './AccountSection.vue';
-import Contribution from '../../contribution/Contribution.vue';
-import AppSubHeading from '../../AppSubHeading.vue';
-import { JoinContent } from '../../../utils/api/api.interface';
-import JoinHeader from './JoinHeader.vue';
-import AppCheckbox from '../../forms/AppCheckbox.vue';
-import AppForm from '../../forms/AppForm.vue';
-import beabeeLogo from '../../../assets/images/beabee-logo.png';
+import Contribution from '@components/contribution/Contribution.vue';
+import AppCheckbox from '@components/forms/AppCheckbox.vue';
+import AppForm from '@components/forms/AppForm.vue';
+import AuthBox from '@components/AuthBox.vue';
+
+import type { ContentJoinData, ContentPaymentData } from '@type';
 
 const props = defineProps<{
-  joinContent: JoinContent;
+  joinContent: ContentJoinData;
+  paymentContent: ContentPaymentData;
+  preview?: boolean;
   onSubmit?: () => Promise<void>;
 }>();
 
 const { t } = useI18n();
 
-const { signUpData, signUpDescription } = useJoin(toRef(props, 'joinContent'));
+const { signUpData, signUpDescription } = useJoin(
+  toRef(props, 'paymentContent')
+);
 
 const buttonText = computed(() => {
   return signUpData.noContribution

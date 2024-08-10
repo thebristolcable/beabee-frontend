@@ -1,12 +1,120 @@
-import { CalloutComponentSchema, ItemStatus } from '@beabee/beabee-common';
+import {
+  flattenComponents,
+  ItemStatus,
+  type CalloutComponentSchema,
+  type CalloutComponentInputSelectableRadioSchema,
+  type GetCalloutSlideSchema,
+  type SetCalloutSlideSchema,
+} from '@beabee/beabee-common';
 import { format } from 'date-fns';
-import { CalloutStepsProps } from '../components/pages/admin/callouts/callouts.interface';
-import { FilterItem, FilterItems } from '../components/search/search.interface';
-import { CreateCalloutData, GetCalloutDataWith } from './api/api.interface';
+import type { CalloutStepsProps } from '@components/pages/admin/callouts/callouts.interface';
+import type {
+  FilterItem,
+  FilterItems,
+} from '@components/search/search.interface';
+
 import env from '../env';
+import i18n from '@lib/i18n';
+
+import type {
+  CalloutVariantData,
+  CalloutVariantNavigationData,
+  CreateCalloutData,
+  GetCalloutDataWith,
+  LocaleProp,
+} from '@type';
+import type {
+  FormBuilderNavigation,
+  FormBuilderSlide,
+} from '@components/form-builder/form-builder.interface';
+
+const { t } = i18n.global;
+
+export function getSlideSchema(no: number): FormBuilderSlide {
+  const id = 'slide' + Math.random().toString(36).substring(2, 8);
+  return {
+    id,
+    title: t('calloutBuilder.slideNo', { no }),
+    components: [],
+    navigation: {
+      nextText: { default: t('actions.next') },
+      prevText: { default: t('actions.back') },
+      nextSlideId: '',
+      submitText: { default: t('actions.submit') },
+    },
+  };
+}
+
+const textFields = [
+  'title',
+  'excerpt',
+  'intro',
+  'thanksTitle',
+  'thanksText',
+  'thanksRedirect',
+  'shareTitle',
+  'shareDescription',
+] as const;
+
+function convertVariantsForSteps(
+  variants: Record<string, CalloutVariantData> | undefined
+): Record<(typeof textFields)[number], LocaleProp> {
+  const result: Record<(typeof textFields)[number], LocaleProp> = {
+    title: { default: '' },
+    excerpt: { default: '' },
+    intro: { default: '' },
+    thanksText: { default: '' },
+    thanksTitle: { default: '' },
+    thanksRedirect: { default: '' },
+    shareTitle: { default: '' },
+    shareDescription: { default: '' },
+  };
+
+  for (const variant in variants) {
+    for (const field of textFields) {
+      result[field][variant] = variants[variant][field] || '';
+    }
+  }
+
+  return result;
+}
+
+function convertSlidesForSteps(
+  slidesIn: GetCalloutSlideSchema[] | undefined,
+  variants: Record<string, CalloutVariantData> | undefined
+): { slides: FormBuilderSlide[]; componentText: Record<string, LocaleProp> } {
+  const componentText: Record<string, LocaleProp> = {};
+
+  if (!slidesIn) return { slides: [getSlideSchema(1)], componentText };
+
+  const slides = slidesIn.map((slide) => {
+    const navigation: FormBuilderNavigation = {
+      prevText: { default: '' },
+      nextText: { default: '' },
+      submitText: { default: '' },
+      nextSlideId: slide.navigation.nextSlideId,
+    };
+
+    for (const variant in variants) {
+      for (const field of ['prevText', 'nextText', 'submitText'] as const) {
+        navigation[field][variant] =
+          variants[variant].slideNavigation[slide.id][field];
+      }
+
+      for (const text in variants[variant].componentText) {
+        componentText[text] ||= { default: '' };
+        componentText[text][variant] = variants[variant].componentText[text];
+      }
+    }
+
+    return { ...slide, navigation };
+  });
+
+  return { slides, componentText };
+}
 
 export function convertCalloutToSteps(
-  callout?: GetCalloutDataWith<'form' | 'responseViewSchema'>
+  callout?: GetCalloutDataWith<'form' | 'responseViewSchema' | 'variants'>
 ): CalloutStepsProps {
   const settings = env.cnrMode
     ? ({
@@ -14,7 +122,7 @@ export function convertCalloutToSteps(
         allowAnonymousResponses: 'guests',
         showOnUserDashboards: false,
         usersCanEditAnswers: false,
-        multipleResponses: false,
+        multipleResponses: true,
       } as const)
     : ({
         whoCanTakePart:
@@ -23,31 +131,37 @@ export function convertCalloutToSteps(
           callout?.access === 'anonymous'
             ? 'guests'
             : callout?.access === 'only-anonymous'
-            ? 'all'
-            : 'none',
+              ? 'all'
+              : 'none',
         showOnUserDashboards: !callout?.hidden,
         usersCanEditAnswers: callout?.allowUpdate || false,
         multipleResponses: callout?.allowMultiple || false,
       } as const);
 
+  const variants = convertVariantsForSteps(callout?.variants);
+
+  const content = convertSlidesForSteps(
+    callout?.formSchema.slides,
+    callout?.variants
+  );
+
   return {
-    content: {
-      introText: callout?.intro || '',
-      formSchema: callout?.formSchema || { components: [] },
-    },
+    content,
     titleAndImage: {
-      title: callout?.title || '',
-      description: callout?.excerpt || '',
+      title: variants.title,
+      description: variants.excerpt,
       coverImageURL: callout?.image || '',
+      introText: variants.intro,
       useCustomSlug: !!callout,
       autoSlug: '',
       slug: callout?.slug || '',
       overrideShare: !!callout?.shareTitle,
-      shareTitle: callout?.shareTitle || '',
-      shareDescription: callout?.shareDescription || '',
+      shareTitle: variants.shareTitle,
+      shareDescription: variants.shareDescription,
     },
     settings: {
       ...settings,
+      requireCaptcha: callout?.captcha || 'none',
       showResponses: !!callout?.responseViewSchema,
       responseViews: [
         ...(callout?.responseViewSchema?.gallery ? ['gallery' as const] : []),
@@ -57,6 +171,7 @@ export function convertCalloutToSteps(
       responseTitleProp: callout?.responseViewSchema?.titleProp || '',
       responseImageProp: callout?.responseViewSchema?.imageProp || '',
       responseImageFilter: callout?.responseViewSchema?.imageFilter || '',
+      responseLinks: callout?.responseViewSchema?.links || [],
       mapSchema: callout?.responseViewSchema?.map || {
         style: '',
         bounds: [
@@ -71,12 +186,15 @@ export function convertCalloutToSteps(
         addressPattern: '',
         addressPatternProp: '',
       },
+      locales: callout
+        ? Object.keys(callout.variants).filter((v) => v !== 'default')
+        : [],
     },
     endMessage: {
       whenFinished: callout?.thanksRedirect ? 'redirect' : 'message',
-      thankYouTitle: callout?.thanksTitle || '',
-      thankYouText: callout?.thanksText || '',
-      thankYouRedirect: callout?.thanksRedirect || '',
+      thankYouTitle: variants.thanksTitle,
+      thankYouText: variants.thanksText,
+      thankYouRedirect: variants.thanksRedirect,
     },
     /*mailchimp: {
       useMailchimpSync: false,
@@ -92,18 +210,84 @@ export function convertCalloutToSteps(
   };
 }
 
+function convertVariantsForCallout(
+  steps: CalloutStepsProps
+): Record<string, CalloutVariantData> {
+  const variants: Record<string, CalloutVariantData> = {};
+  for (const variant of [...steps.settings.locales, 'default']) {
+    const slideNavigation: Record<string, CalloutVariantNavigationData> = {};
+
+    for (const slide of steps.content.slides) {
+      slideNavigation[slide.id] = {
+        nextText: slide.navigation.nextText[variant] || '',
+        prevText: slide.navigation.prevText[variant] || '',
+        submitText: slide.navigation.submitText[variant] || '',
+      };
+    }
+
+    const componentText: Record<string, string> = {};
+    for (const key in steps.content.componentText) {
+      componentText[key] = steps.content.componentText[key][variant] || '';
+    }
+
+    variants[variant] = {
+      title: steps.titleAndImage.title[variant] || '',
+      excerpt: steps.titleAndImage.description[variant] || '',
+      intro: steps.titleAndImage.introText[variant] || '',
+      ...(steps.endMessage.whenFinished === 'redirect'
+        ? {
+            thanksText: '',
+            thanksTitle: '',
+            thanksRedirect: steps.endMessage.thankYouRedirect[variant] || '',
+          }
+        : {
+            thanksText: steps.endMessage.thankYouText[variant] || '',
+            thanksTitle: steps.endMessage.thankYouTitle[variant] || '',
+            thanksRedirect: null,
+          }),
+      ...(steps.titleAndImage.overrideShare
+        ? {
+            shareTitle: steps.titleAndImage.shareTitle[variant] || '',
+            shareDescription:
+              steps.titleAndImage.shareDescription[variant] || '',
+          }
+        : {
+            shareTitle: null,
+            shareDescription: null,
+          }),
+      slideNavigation,
+      componentText,
+    };
+  }
+
+  return variants;
+}
+
+function convertSlidesForCallout(
+  steps: CalloutStepsProps
+): SetCalloutSlideSchema[] {
+  return steps.content.slides.map((slide) => ({
+    ...slide,
+    navigation: {
+      nextSlideId: slide.navigation.nextSlideId,
+    },
+  }));
+}
+
 export function convertStepsToCallout(
   steps: CalloutStepsProps
 ): CreateCalloutData {
+  const slug = steps.titleAndImage.useCustomSlug
+    ? steps.titleAndImage.slug
+    : steps.titleAndImage.autoSlug;
+
+  const slides = convertSlidesForCallout(steps);
+  const variants = convertVariantsForCallout(steps);
+
   return {
-    slug: steps.titleAndImage.useCustomSlug
-      ? steps.titleAndImage.slug
-      : steps.titleAndImage.autoSlug,
-    title: steps.titleAndImage.title,
-    excerpt: steps.titleAndImage.description,
+    slug: slug || null,
     image: steps.titleAndImage.coverImageURL,
-    intro: steps.content.introText,
-    formSchema: steps.content.formSchema,
+    formSchema: { slides },
     responseViewSchema: steps.settings.showResponses
       ? {
           buckets: steps.settings.responseBuckets,
@@ -111,6 +295,7 @@ export function convertStepsToCallout(
           imageProp: steps.settings.responseImageProp,
           imageFilter: steps.settings.responseImageFilter,
           gallery: steps.settings.responseViews.includes('gallery'),
+          links: steps.settings.responseLinks,
           map: steps.settings.responseViews.includes('map')
             ? {
                 ...steps.settings.mapSchema,
@@ -131,31 +316,16 @@ export function convertStepsToCallout(
     allowUpdate:
       !steps.settings.multipleResponses && steps.settings.usersCanEditAnswers,
     hidden: !steps.settings.showOnUserDashboards,
+    captcha: steps.settings.requireCaptcha,
     access:
       steps.settings.whoCanTakePart === 'members'
         ? 'member'
         : steps.settings.allowAnonymousResponses === 'none'
-        ? 'guest'
-        : steps.settings.allowAnonymousResponses === 'guests'
-        ? 'anonymous'
-        : 'only-anonymous',
-    ...(steps.endMessage.whenFinished === 'message'
-      ? {
-          thanksText: steps.endMessage.thankYouText,
-          thanksTitle: steps.endMessage.thankYouTitle,
-          thanksRedirect: null,
-        }
-      : {
-          thanksText: '',
-          thanksTitle: '',
-          thanksRedirect: steps.endMessage.thankYouRedirect,
-        }),
-    shareTitle: steps.titleAndImage.overrideShare
-      ? steps.titleAndImage.shareTitle
-      : '',
-    shareDescription: steps.titleAndImage.overrideShare
-      ? steps.titleAndImage.shareDescription
-      : '',
+          ? 'guest'
+          : steps.settings.allowAnonymousResponses === 'guests'
+            ? 'anonymous'
+            : 'only-anonymous',
+    variants,
   };
 }
 
@@ -166,10 +336,10 @@ function convertValuesToOptions(
 }
 
 function convertComponentToFilter(
-  component: CalloutComponentSchema
+  component: CalloutComponentSchema & { fullKey: string }
 ): FilterItem {
   const baseItem = {
-    label: component.label || component.key,
+    label: component.label || component.fullKey,
     nullable: true,
   };
 
@@ -204,11 +374,25 @@ function convertComponentToFilter(
 }
 
 export function convertComponentsToFilters(
-  components: CalloutComponentSchema[]
+  components: (CalloutComponentSchema & { fullKey: string })[]
 ): FilterItems {
   const items = components.map((c) => {
-    return [`answers.${c.key}`, convertComponentToFilter(c)] as const;
+    return [`answers.${c.fullKey}`, convertComponentToFilter(c)] as const;
   });
 
   return Object.fromEntries(items);
+}
+
+function isDecisionComponent(
+  component: CalloutComponentSchema
+): component is CalloutComponentInputSelectableRadioSchema {
+  return (
+    component.type === 'radio' && component.values.some((v) => v.nextSlideId)
+  );
+}
+
+export function getDecisionComponent(
+  components: CalloutComponentSchema[]
+): CalloutComponentInputSelectableRadioSchema | undefined {
+  return flattenComponents(components).find(isDecisionComponent);
 }

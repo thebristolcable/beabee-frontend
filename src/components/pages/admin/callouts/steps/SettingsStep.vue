@@ -70,7 +70,25 @@
         />
       </AppFormSection>
     </template>
-    <template v-else>
+
+    <AppFormSection
+      v-if="env.captchafoxKey"
+      :help="inputT('requireCaptcha.help')"
+    >
+      <AppRadioGroup
+        v-model="data.requireCaptcha"
+        name="requireCaptcha"
+        :label="inputT('requireCaptcha.label')"
+        :options="[
+          ['none', inputT('requireCaptcha.opts.none')],
+          ['guest', inputT('requireCaptcha.opts.guests')],
+          ['all', inputT('requireCaptcha.opts.all')],
+        ]"
+        required
+      />
+    </AppFormSection>
+
+    <template v-if="env.experimentalFeatures">
       <AppFormSection :help="inputT('showResponses.help')">
         <AppRadioGroup
           v-model="data.showResponses"
@@ -88,9 +106,7 @@
           <AppCheckboxGroup
             v-model="data.responseBuckets"
             :label="inputT('whichResponseBuckets.label')"
-            :options="
-              buckets.map((bucket) => [bucket.id, bucket.label || bucket.id])
-            "
+            :options="buckets"
             required
           />
         </AppFormSection>
@@ -99,8 +115,11 @@
             v-model="data.responseViews"
             :label="inputT('whichResponseViews.label')"
             :options="[
-              ['gallery', inputT('whichResponseViews.opts.gallery')],
-              ['map', inputT('whichResponseViews.opts.map')],
+              {
+                id: 'gallery',
+                label: inputT('whichResponseViews.opts.gallery'),
+              },
+              { id: 'map', label: inputT('whichResponseViews.opts.map') },
             ]"
             required
           />
@@ -120,6 +139,10 @@
             :items="fileComponentItems"
             :required="data.responseViews.includes('gallery')"
           />
+        </AppFormSection>
+        <AppFormSection>
+          <AppLabel :label="inputT('responseLinks.label')" />
+          <AppLinkList v-model="data.responseLinks" />
         </AppFormSection>
         <AppFormSection>
           <AppInput
@@ -214,22 +237,35 @@
               required
             />
           </AppFormSection>
+          <AppFormSection>
+            <AppInput
+              v-model="data.mapSchema.geocodeCountries"
+              :label="inputT('mapSchema.geocodeCountries.label')"
+            />
+          </AppFormSection>
         </template>
       </template>
+      <AppFormSection>
+        <AppCheckboxGroup
+          v-model="data.locales"
+          label="Enable multiple languages?"
+          :options="localeItems"
+        />
+      </AppFormSection>
     </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ItemStatus, flattenComponents } from '@beabee/beabee-common';
+import { ItemStatus, getCalloutComponents } from '@beabee/beabee-common';
 import useVuelidate from '@vuelidate/core';
 import { computed, ref, toRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppRadioGroup from '../../../../forms/AppRadioGroup.vue';
 import AppFormSection from '../../../../forms/AppFormSection.vue';
 import {
-  CalloutSteps,
-  SettingsStepProps,
+  type CalloutSteps,
+  type SettingsStepProps,
   buckets,
 } from '../callouts.interface';
 import { sameAs } from '@vuelidate/validators';
@@ -238,6 +274,9 @@ import AppSelect from '../../../../forms/AppSelect.vue';
 import AppSubHeading from '../../../../AppSubHeading.vue';
 import env from '../../../../../env';
 import AppCheckboxGroup from '../../../../forms/AppCheckboxGroup.vue';
+import AppLinkList from '../../../../forms/AppLinkList.vue';
+import AppLabel from '../../../../forms/AppLabel.vue';
+import { localeItems } from '@lib/i18n';
 
 const emit = defineEmits(['update:error', 'update:validated']);
 const props = defineProps<{
@@ -255,11 +294,11 @@ const hasVisited = ref(!!props.status);
 watch(toRef(props, 'isActive'), (active) => (hasVisited.value ||= active));
 
 const formComponentItems = computed(() =>
-  flattenComponents(props.steps.content.data.formSchema.components)
+  getCalloutComponents(props.steps.content.data)
     .filter((c) => c.input)
     .map((c) => ({
-      id: c.key,
-      label: c.label || c.key,
+      id: c.fullKey,
+      label: c.label || c.fullKey,
       type: c.type,
     }))
 );

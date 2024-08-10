@@ -1,12 +1,17 @@
-import { RoleType } from '@beabee/beabee-common';
-import { computed, ComputedRef, ref } from 'vue';
-import axios from '../lib/axios';
-import { fetchContact } from '../utils/api/contact';
-import { GetContactData } from '../utils/api/api.interface';
+import type { RoleType } from '@beabee/beabee-common';
+import { computed, type ComputedRef, ref } from 'vue';
 
-export async function updateCurrentUser(): Promise<void> {
+import { instance } from '@utils/api';
+
+import { fetchContact } from '@utils/api/contact';
+
+import type { GetContactData } from '@type';
+
+export async function updateCurrentUser(
+  contact?: GetContactData
+): Promise<void> {
   try {
-    currentUser.value = await fetchContact('me');
+    currentUser.value = contact || (await fetchContact('me'));
   } catch (err) {
     currentUser.value = null;
   }
@@ -15,7 +20,7 @@ export async function updateCurrentUser(): Promise<void> {
 export const currentUser = ref<GetContactData | null>(null);
 export const initCurrentUser = updateCurrentUser();
 
-axios.interceptors.response.use(
+instance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {

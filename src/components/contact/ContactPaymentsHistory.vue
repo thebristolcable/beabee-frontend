@@ -1,8 +1,6 @@
 <template>
   <div v-if="paymentsHistoryTable.total > 0">
-    <AppHeading class="mb-2">{{
-      t('contribution.paymentHistory.title')
-    }}</AppHeading>
+    <AppHeading>{{ t('contribution.paymentHistory.title') }}</AppHeading>
     <AppTable
       :sort="{ by: 'chargeDate', type: SortType.Desc }"
       :headers="headers"
@@ -15,8 +13,8 @@
         {{ formatLocale(value, 'PPP') }}
       </template>
       <template #value-amount="{ value, item }">
-        <span class="mr-3">
-          {{ getStatusText(item) }}
+        <span v-if="item.status !== PaymentStatus.Successful" class="mr-3">
+          {{ t('common.paymentStatus.' + item.status) }}
         </span>
         <b>{{ n(value, 'currency') }}</b>
       </template>
@@ -38,18 +36,19 @@
 </template>
 
 <script lang="ts" setup>
-import { Paginated, PaymentStatus } from '@beabee/beabee-common';
+import { type Paginated, PaymentStatus } from '@beabee/beabee-common';
 import { useI18n } from 'vue-i18n';
 import { computed, ref, watchEffect } from 'vue';
 
-import AppTable from '../table/AppTable.vue';
-import AppPagination from '../AppPagination.vue';
-import { formatLocale } from '../../utils/dates';
+import AppTable from '@components/table/AppTable.vue';
+import AppPagination from '@components/AppPagination.vue';
+import { type Header, SortType } from '@components/table/table.interface';
+import AppHeading from '@components/AppHeading.vue';
 
-import { fetchPayments } from '../../utils/api/contact';
-import { GetPaymentData } from '../../utils/api/api.interface';
-import { Header, SortType } from '../table/table.interface';
-import AppHeading from '../AppHeading.vue';
+import { formatLocale } from '@utils/dates';
+import { fetchPayments } from '@utils/api/contact';
+
+import type { GetPaymentData, GetPaymentsQuery } from '@type';
 
 const { t, n } = useI18n();
 
@@ -80,29 +79,23 @@ function getRowClass(item: GetPaymentData) {
     case PaymentStatus.Failed:
       return 'text-danger';
     case PaymentStatus.Pending:
+    case PaymentStatus.Draft:
       return 'text-body-60';
     default:
       return '';
   }
 }
 
-function getStatusText(item: GetPaymentData) {
-  switch (item.status) {
-    case PaymentStatus.Cancelled:
-      return t('common.paymentStatus.cancelled');
-    case PaymentStatus.Failed:
-      return t('common.paymentStatus.failed');
-    case PaymentStatus.Pending:
-      return t('common.paymentStatus.pending');
-  }
-}
-
 watchEffect(async () => {
-  const query = {
+  const query: GetPaymentsQuery = {
     offset: currentPage.value * pageSize,
     limit: pageSize,
     sort: 'chargeDate',
     order: SortType.Desc,
+    rules: {
+      condition: 'AND',
+      rules: [{ field: 'status', operator: 'not_equal', value: ['draft'] }],
+    },
   };
   paymentsHistoryTable.value = await fetchPayments(props.id, query);
 });

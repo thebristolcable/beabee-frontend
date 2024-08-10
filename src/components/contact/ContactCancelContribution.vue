@@ -1,8 +1,6 @@
 <template>
   <div v-if="canCancel">
-    <AppHeading class="mb-2">
-      {{ t('contribution.cancelContribution') }}
-    </AppHeading>
+    <AppHeading>{{ t('contribution.cancelContribution') }}</AppHeading>
 
     <p v-if="props.contribution.membershipExpiryDate" class="mb-3 text-sm">
       {{
@@ -26,11 +24,12 @@
 <script lang="ts" setup>
 import { ContributionType, MembershipStatus } from '@beabee/beabee-common';
 import AppButton from '../button/AppButton.vue';
-import { formatLocale } from '../../utils/dates';
+import { formatLocale } from '@utils/dates';
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ContributionInfo } from '../../utils/api/api.interface';
 import AppHeading from '../AppHeading.vue';
+
+import type { ContributionInfo } from '@type';
 
 const { t } = useI18n();
 
